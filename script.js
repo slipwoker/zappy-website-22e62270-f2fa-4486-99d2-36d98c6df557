@@ -1389,6 +1389,8 @@ window.onload = function() {
 ;
 
 ;
+
+;
 /* ==ZAPPY E-COMMERCE JS START== */
 // E-commerce functionality
 (function() {
@@ -2544,9 +2546,12 @@ function stripHtmlToText(html) {
   
   // Render products to grid
   function renderProductsToGrid(grid, products) {
+    // Card layout is now Standard (square) or Portrait (tall); legacy
+    // compact/detailed map to standard.
+    var cardLayout = (productLayout === 'portrait') ? 'portrait' : 'standard';
     // Update grid class based on layout + view mode
     var viewClass = currentViewMode === 'list' ? ' view-list' : '';
-    grid.className = 'product-grid layout-' + productLayout + viewClass;
+    grid.className = 'product-grid layout-' + cardLayout + viewClass;
     grid.setAttribute('data-zappy-auto-grid', 'true');
     
     grid.innerHTML = products.map(function(p) {
@@ -2634,59 +2639,686 @@ function stripHtmlToText(html) {
       
       var favBtnHtml = isCatalogMode ? '' : '<button type="button" class="card-favorite-btn" data-product-id="' + p.id + '" onclick="event.preventDefault(); event.stopPropagation(); toggleCardFavorite(this, \'' + p.id + '\')" title="שמור למועדפים" aria-pressed="false"><svg class="heart-outline" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M14.7917 0.833C12.705 0.833 10.811 2.376 10 4.462C9.189 2.375 7.295 0.833 5.208 0.833C2.337 0.833 0 3.17 0 6.042C0 11.675 8.128 17.767 9.758 18.93L10 19.104L10.243 18.93C11.873 17.767 20 11.674 20 6.042C20 3.17 17.663 0.833 14.792 0.833ZM10 18.078C5.716 14.965 0.833 10.019 0.833 6.042C0.833 3.629 2.796 1.667 5.208 1.667C7.498 1.667 9.583 4.05 9.583 6.667H10.417C10.417 4.05 12.502 1.667 14.792 1.667C17.204 1.667 19.167 3.629 19.167 6.042C19.167 10.019 14.284 14.965 10 18.078Z" fill="currentColor"/></svg><svg class="heart-filled" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20"><path d="M14.7917 0.833C12.705 0.833 10.811 2.376 10 4.462C9.189 2.375 7.295 0.833 5.208 0.833C2.337 0.833 0 3.17 0 6.042C0 11.675 8.128 17.767 9.758 18.93L10 19.104L10.243 18.93C11.873 17.767 20 11.674 20 6.042C20 3.17 17.663 0.833 14.792 0.833Z" fill="#e74c3c"/></svg></button>';
       var productHref = buildStorefrontPath('/product/' + (p.slug || p.id));
-      var productCardMediaHtml = '<div class="product-card-media"><a href="' + productHref + '" class="product-card-image-link">' + imageHtml + '</a>' + tagsHtml + favBtnHtml + '</div>';
 
-      if (productLayout === 'compact') {
-        cardContent =
-          '<div class="product-card-inner">' +
-            productCardMediaHtml +
-            '<a href="' + productHref + '" class="product-card-body-link">' +
-              '<div class="card-content">' +
-                '<h3>' + p.name + '</h3>' +
-                priceHtml +
-              '</div>' +
-            '</a>' +
-          '</div>';
-      } else if (productLayout === 'detailed') {
-        var detailedDesc = stripHtmlToText(p.description || '');
-        var actionButton = isCatalogMode
-          ? '<a href="' + productHref + '" class="add-to-cart view-details-btn">' + localizedViewDetails + '</a>'
-          : '<button class="add-to-cart" onclick="event.stopPropagation(); window.zappyHandleAddToCart(' + JSON.stringify(p).replace(/"/g, '&quot;') + ')">' + localizedAddToCart + '</button>';
-        cardContent =
-          '<div class="product-card-inner">' +
-            productCardMediaHtml +
-            '<a href="' + productHref + '" class="product-card-body-link">' +
-              '<div class="card-content">' +
-                '<h3>' + p.name + '</h3>' +
-                '<p>' + detailedDesc + '</p>' +
-                priceHtml +
-              '</div>' +
-            '</a>' +
-          '</div>' +
-          actionButton;
-      } else {
-        var standardDesc = stripHtmlToText(p.description || '');
-        cardContent =
-          '<div class="product-card-inner">' +
-            productCardMediaHtml +
-            '<a href="' + productHref + '" class="product-card-body-link">' +
-              '<div class="card-content">' +
-                '<h3>' + p.name + '</h3>' +
-                '<p>' + standardDesc + '</p>' +
-                priceHtml +
-              '</div>' +
-            '</a>' +
-          '</div>';
-      }
-      
-      return '<div class="product-card ' + productLayout + '" data-product-id="' + p.id + '">' + cardContent + '</div>';
+      // Register the product so the shared card-interaction handler can resolve
+      // it on swatch/size/cart/quick-view clicks.
+      window.zappyRegisterCardProduct(p);
+      cardContent = window.zappyBuildCardInnerHtml(p, cardLayout, {
+        imageHtml: imageHtml,
+        tagsHtml: tagsHtml,
+        favBtnHtml: favBtnHtml,
+        productHref: productHref,
+        priceHtml: priceHtml,
+        shortDesc: stripHtmlToText(p.description || ''),
+        isCatalogMode: isCatalogMode,
+        localizedViewDetails: localizedViewDetails
+      });
+
+      return '<div class="product-card ' + cardLayout + '" data-product-id="' + p.id + '">' + cardContent + '</div>';
     }).join('');
+
+    window.zappyAfterCardsRendered(grid);
   }
   
   function initFilterButtons() {
     // Legacy filter buttons removed - sidebar filters handle all filtering
   }
-  
+
+  /* ==ZAPPY VARIANT MATRIX== */
+  // Single source of truth for variant availability + combination matching,
+  // shared by the product detail page, product cards, and the Quick View modal.
+  // Wildcard semantics: a variant that does not define an attribute key matches
+  // any value for that key. Accepts both PDP variant rows (stock_status /
+  // inventory_quantity / stock_quantity / is_active) and the card_variants matrix
+  // (precomputed boolean available flag). Mirrors
+  // server utils ecommerceVariantStorefrontAvailability.
+  window.zappyVariantMatrix = (function() {
+    function isUnavailable(v) {
+      if (!v) return true;
+      if (typeof v.available === 'boolean') return !v.available;
+      if (v.is_active === false) return true;
+      if (v.stock_status === 'out_of_stock') return true;
+      var iq = v.inventory_quantity != null ? v.inventory_quantity : v.inventoryQuantity;
+      if (iq !== null && iq !== undefined && iq !== '') {
+        var n = parseFloat(iq);
+        if (!isNaN(n) && isFinite(n)) return n <= 0;
+      }
+      var sq = v.stock_quantity;
+      if (sq !== null && sq !== undefined && sq !== '') {
+        var n2 = parseFloat(sq);
+        if (!isNaN(n2) && isFinite(n2)) return n2 <= 0;
+      }
+      return false;
+    }
+    function isActiveRow(v) { return !!(v && v.attributes && v.is_active !== false); }
+    function matchesAll(variant, selections, skipKey) {
+      if (!isActiveRow(variant)) return false;
+      for (var k in selections) {
+        if (!selections.hasOwnProperty(k)) continue;
+        if (skipKey && k === skipKey) continue;
+        if (variant.attributes.hasOwnProperty(k) && variant.attributes[k] !== selections[k]) return false;
+      }
+      return true;
+    }
+    function filterMatching(variants, selections) {
+      return (variants || []).filter(function(v) { return matchesAll(v, selections); });
+    }
+    function findMatching(variants, selectedAttributes) {
+      var keys = Object.keys(selectedAttributes || {});
+      if (keys.length === 0) return null;
+      return filterMatching(variants, selectedAttributes)[0] || null;
+    }
+    function existsWith(variants, attrKey, attrValue, otherSelections) {
+      return (variants || []).some(function(variant) {
+        if (!isActiveRow(variant)) return false;
+        if (variant.attributes.hasOwnProperty(attrKey) && variant.attributes[attrKey] !== attrValue) return false;
+        return matchesAll(variant, otherSelections, attrKey);
+      });
+    }
+    function isOutOfStock(variants, attrKey, attrValue, otherSelections) {
+      var matched = (variants || []).filter(function(variant) {
+        if (!isActiveRow(variant)) return false;
+        if (variant.attributes.hasOwnProperty(attrKey) && variant.attributes[attrKey] !== attrValue) return false;
+        return matchesAll(variant, otherSelections, attrKey);
+      });
+      return matched.length > 0 && matched.every(isUnavailable);
+    }
+    function imageForSelection(variants, selectedAttributes) {
+      var m = findMatching(variants, selectedAttributes);
+      return (m && m.image) || null;
+    }
+    function imageForValue(variants, attrKey, attrValue) {
+      var fallback = null;
+      for (var i = 0; i < (variants || []).length; i++) {
+        var v = variants[i];
+        if (!isActiveRow(v)) continue;
+        if (v.attributes[attrKey] !== attrValue) continue;
+        if (!v.image) continue;
+        if (!isUnavailable(v)) return v.image;
+        if (!fallback) fallback = v.image;
+      }
+      return fallback;
+    }
+    // optionState(variants, key, value, otherSelections) returns exists + outOfStock
+    function optionState(variants, attrKey, attrValue, otherSelections) {
+      var exists = existsWith(variants, attrKey, attrValue, otherSelections);
+      return { exists: exists, outOfStock: exists && isOutOfStock(variants, attrKey, attrValue, otherSelections) };
+    }
+    return {
+      isUnavailable: isUnavailable,
+      matchesAll: matchesAll,
+      filterMatching: filterMatching,
+      findMatching: findMatching,
+      existsWith: existsWith,
+      isOutOfStock: isOutOfStock,
+      imageForSelection: imageForSelection,
+      imageForValue: imageForValue,
+      optionState: optionState
+    };
+  })();
+
+  /* ==ZAPPY CARD VARIANTS== */
+  // On-card color swatches + size strip + per-card persisted selection +
+  // context-aware cart button + Quick View entry. Shared by both product-grid
+  // renderers (renderProductsToGrid here and renderProductGrid in additionalJs).
+  window.__zappyCardProducts = window.__zappyCardProducts || {};
+  window.zappyRegisterCardProduct = function(p) { if (p && p.id) window.__zappyCardProducts[p.id] = p; };
+  window.zappyGetCardProduct = function(pid) { return window.__zappyCardProducts[pid] || null; };
+
+  function zappyCardSelKey() {
+    var wid = (typeof websiteId !== 'undefined' && websiteId) ? websiteId : (window.ZAPPY_WEBSITE_ID || '');
+    return 'zappy_card_sel_' + wid;
+  }
+  function zappyReadCardSelections() {
+    try { return JSON.parse(localStorage.getItem(zappyCardSelKey()) || '{}') || {}; } catch (e) { return {}; }
+  }
+  window.zappyGetCardSelection = function(pid) { var all = zappyReadCardSelections(); return all[pid] || {}; };
+  window.zappySetCardSelection = function(pid, sel) {
+    try { var all = zappyReadCardSelections(); all[pid] = sel; localStorage.setItem(zappyCardSelKey(), JSON.stringify(all)); } catch (e) {}
+  };
+
+  function zappyCardEscAttr(v) {
+    return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function zappyCardCssColor(v) {
+    var s = String(v == null ? '' : v).trim();
+    if (/^#[0-9A-Fa-f]{3,8}$/.test(s)) return s;
+    if (/^rgb/i.test(s) || /^hsl/i.test(s)) return s;
+    if (/^[a-zA-Z ]+$/.test(s)) return s.toLowerCase();
+    return '#94a3b8';
+  }
+  function zappyCardSelAttrs(cv, sel) {
+    var attrs = {};
+    if (cv.colorKey && sel.color) attrs[cv.colorKey] = sel.color;
+    if (cv.sizeKey && sel.size) attrs[cv.sizeKey] = sel.size;
+    return attrs;
+  }
+  function zappyCardOption(cv, key) {
+    if (!cv || !cv.options) return null;
+    for (var i = 0; i < cv.options.length; i++) { if (cv.options[i].key === key) return cv.options[i]; }
+    return null;
+  }
+
+  // Returns { swatchRow, sizeStrip } HTML for a product's card from p.card_variants.
+  window.zappyCardVariantsHtml = function(p) {
+    var out = { swatchRow: '', sizeStrip: '' };
+    var cv = p && p.card_variants;
+    if (!cv || !cv.options || !cv.options.length) return out;
+    var sel = window.zappyGetCardSelection(p.id) || {};
+    var opt, vals, j, val, oos, cls;
+
+    if (cv.colorKey) {
+      opt = zappyCardOption(cv, cv.colorKey);
+      if (opt && opt.values && opt.values.length) {
+        vals = opt.values;
+        var otherForColor = {};
+        if (cv.sizeKey && sel.size) otherForColor[cv.sizeKey] = sel.size;
+        var dots = '';
+        for (j = 0; j < vals.length; j++) {
+          val = vals[j];
+          oos = window.zappyVariantMatrix.isOutOfStock(cv.matrix, cv.colorKey, val.value, otherForColor);
+          cls = 'zc-swatch' + (sel.color === val.value ? ' selected' : '') + (oos ? ' out-of-stock' : '');
+          dots += '<button type="button" class="' + cls + '" data-color="' + zappyCardEscAttr(val.value) + '"'
+            + (val.image ? ' data-image="' + zappyCardEscAttr(val.image) + '"' : '')
+            + ' title="' + zappyCardEscAttr(val.label) + '" aria-label="' + zappyCardEscAttr(val.label) + '">'
+            + '<span class="zc-swatch-dot" style="background:' + zappyCardCssColor(val.hex || val.value) + '"></span></button>';
+        }
+        var cScroll = vals.length > 8;
+        out.swatchRow = '<div class="zc-swatches' + (cScroll ? ' zc-scrollable' : '') + '" data-card-swatches>'
+          + (cScroll ? '<button type="button" class="zc-scroll zc-scroll-prev" tabindex="-1" aria-hidden="true">\u2039</button>' : '')
+          + '<div class="zc-swatch-track">' + dots + '</div>'
+          + (cScroll ? '<button type="button" class="zc-scroll zc-scroll-next" tabindex="-1" aria-hidden="true">\u203a</button>' : '')
+          + '</div>';
+      }
+    }
+
+    if (cv.sizeKey) {
+      opt = zappyCardOption(cv, cv.sizeKey);
+      if (opt && opt.values && opt.values.length) {
+        vals = opt.values;
+        var otherForSize = {};
+        if (cv.colorKey && sel.color) otherForSize[cv.colorKey] = sel.color;
+        var pills = '';
+        for (j = 0; j < vals.length; j++) {
+          val = vals[j];
+          oos = window.zappyVariantMatrix.isOutOfStock(cv.matrix, cv.sizeKey, val.value, otherForSize);
+          cls = 'zc-size' + (sel.size === val.value ? ' selected' : '') + (oos ? ' out-of-stock' : '');
+          pills += '<button type="button" class="' + cls + '" data-size="' + zappyCardEscAttr(val.value) + '">' + zappyCardEscAttr(val.label) + '</button>';
+        }
+        var sScroll = vals.length > 6;
+        out.sizeStrip = '<div class="zc-size-strip' + (sScroll ? ' zc-scrollable' : '') + '" data-card-sizes>'
+          + (sScroll ? '<button type="button" class="zc-scroll zc-scroll-prev" tabindex="-1" aria-hidden="true">\u2039</button>' : '')
+          + '<div class="zc-size-track">' + pills + '</div>'
+          + (sScroll ? '<button type="button" class="zc-scroll zc-scroll-next" tabindex="-1" aria-hidden="true">\u203a</button>' : '')
+          + '</div>';
+      }
+    }
+    return out;
+  };
+
+  window.zappyCardEyeBtnHtml = function(p) {
+    var lbl = 'תצוגה מהירה';
+    return '<button type="button" class="card-quickview-btn" data-card-quickview data-product-id="' + zappyCardEscAttr(p.id) + '" title="' + lbl + '" aria-label="' + lbl + '">'
+      + '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>'
+      + '</button>';
+  };
+
+  window.zappyCardCartBtnHtml = function(p) {
+    var lbl = getEcomText('addToCart', t.addToCart);
+    return '<button type="button" class="card-cart-btn" data-card-cart data-product-id="' + zappyCardEscAttr(p.id) + '" aria-label="' + zappyCardEscAttr(lbl) + '">'
+      + '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>'
+      + '</button>';
+  };
+
+  // Assemble the full card inner HTML (shared by both renderers).
+  // parts: { imageHtml, tagsHtml, favBtnHtml, productHref, priceHtml, shortDesc, isCatalogMode, localizedViewDetails }
+  window.zappyBuildCardInnerHtml = function(p, layout, parts) {
+    var variants = window.zappyCardVariantsHtml(p);
+    var eyeBtn = window.zappyCardEyeBtnHtml(p);
+    var mediaActions = '<div class="product-card-actions">' + (parts.favBtnHtml || '') + eyeBtn + '</div>';
+    var sizeOverlay = variants.sizeStrip ? '<div class="product-card-size-overlay">' + variants.sizeStrip + '</div>' : '';
+    var media = '<div class="product-card-media">'
+      + '<a href="' + parts.productHref + '" class="product-card-image-link">' + parts.imageHtml + '</a>'
+      + (parts.tagsHtml || '') + mediaActions + sizeOverlay + '</div>';
+    var desc = parts.shortDesc ? '<p class="card-desc">' + parts.shortDesc + '</p>' : '';
+    var bodyLink = '<a href="' + parts.productHref + '" class="product-card-body-link"><div class="card-content"><h3>' + p.name + '</h3>' + desc + '</div></a>';
+    var cartBtn;
+    if (parts.isCatalogMode) {
+      cartBtn = '<a href="' + parts.productHref + '" class="card-cart-btn view-details-btn" aria-label="' + zappyCardEscAttr(parts.localizedViewDetails || '') + '">'
+        + '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></a>';
+    } else {
+      cartBtn = window.zappyCardCartBtnHtml(p);
+    }
+    var footer = '<div class="product-card-footer">' + (parts.priceHtml || '') + cartBtn + '</div>';
+    var body = '<div class="product-card-body">' + bodyLink + variants.swatchRow + footer + '</div>';
+    return '<div class="product-card-inner">' + media + body + '</div>';
+  };
+
+  function zappyCardEl(node) { return node && node.closest ? node.closest('.product-card') : null; }
+
+  function zappyCardScroll(btn) {
+    var wrap = btn.parentNode;
+    var track = wrap ? wrap.querySelector('.zc-swatch-track, .zc-size-track') : null;
+    if (!track) return;
+    var delta = Math.max(80, Math.round(track.clientWidth * 0.7));
+    if (btn.classList.contains('zc-scroll-prev')) delta = -delta;
+    if (track.scrollBy) track.scrollBy({ left: delta, behavior: 'smooth' });
+    else track.scrollLeft += delta;
+  }
+
+  function zappyCardApplyImage(card, p, sel) {
+    var img = card.querySelector('.product-card-media img');
+    if (!img) return;
+    if (!img.getAttribute('data-zc-orig')) img.setAttribute('data-zc-orig', img.getAttribute('src') || '');
+    var cv = p.card_variants;
+    var src = null;
+    if (cv && cv.colorKey && sel.color) {
+      var colorOpt = zappyCardOption(cv, cv.colorKey);
+      if (colorOpt) {
+        for (var i = 0; i < colorOpt.values.length; i++) {
+          if (colorOpt.values[i].value === sel.color && colorOpt.values[i].image) { src = colorOpt.values[i].image; break; }
+        }
+      }
+    }
+    if (!src && cv) {
+      var mImg = window.zappyVariantMatrix.imageForSelection(cv.matrix, zappyCardSelAttrs(cv, sel));
+      if (mImg) src = mImg;
+    }
+    var resolver = window.resolveProductImageUrl || function(x) { return x; };
+    if (src) img.src = resolver(src);
+    else { var orig = img.getAttribute('data-zc-orig'); if (orig) img.src = orig; }
+  }
+
+  function zappyCardRefreshAvailability(card, p, sel) {
+    var cv = p.card_variants; if (!cv) return;
+    if (cv.colorKey) {
+      var otherForColor = {}; if (cv.sizeKey && sel.size) otherForColor[cv.sizeKey] = sel.size;
+      card.querySelectorAll('[data-card-swatches] [data-color]').forEach(function(b) {
+        b.classList.toggle('out-of-stock', !!window.zappyVariantMatrix.isOutOfStock(cv.matrix, cv.colorKey, b.getAttribute('data-color'), otherForColor));
+      });
+    }
+    if (cv.sizeKey) {
+      var otherForSize = {}; if (cv.colorKey && sel.color) otherForSize[cv.colorKey] = sel.color;
+      card.querySelectorAll('[data-card-sizes] [data-size]').forEach(function(b) {
+        b.classList.toggle('out-of-stock', !!window.zappyVariantMatrix.isOutOfStock(cv.matrix, cv.sizeKey, b.getAttribute('data-size'), otherForSize));
+      });
+    }
+  }
+
+  function zappyCardSelectColor(swatch) {
+    var card = zappyCardEl(swatch); if (!card) return;
+    var pid = card.getAttribute('data-product-id'); var p = window.zappyGetCardProduct(pid); if (!p) return;
+    var sel = window.zappyGetCardSelection(pid); sel.color = swatch.getAttribute('data-color');
+    window.zappySetCardSelection(pid, sel);
+    card.querySelectorAll('[data-card-swatches] [data-color]').forEach(function(b) { b.classList.toggle('selected', b === swatch); });
+    zappyCardApplyImage(card, p, sel);
+    zappyCardRefreshAvailability(card, p, sel);
+  }
+
+  function zappyCardSelectSize(sizeBtn) {
+    if (sizeBtn.classList.contains('out-of-stock')) return;
+    var card = zappyCardEl(sizeBtn); if (!card) return;
+    var pid = card.getAttribute('data-product-id'); var p = window.zappyGetCardProduct(pid); if (!p) return;
+    var sel = window.zappyGetCardSelection(pid); sel.size = sizeBtn.getAttribute('data-size');
+    window.zappySetCardSelection(pid, sel);
+    card.classList.add('zc-sizes-pinned');
+    card.querySelectorAll('[data-card-sizes] [data-size]').forEach(function(b) { b.classList.toggle('selected', b === sizeBtn); });
+    zappyCardRefreshAvailability(card, p, sel);
+  }
+
+  function zappyCardOpenQuickView(btn) {
+    var card = zappyCardEl(btn);
+    var pid = (card && card.getAttribute('data-product-id')) || btn.getAttribute('data-product-id');
+    var p = window.zappyGetCardProduct(pid);
+    var sel = window.zappyGetCardSelection(pid) || {};
+    if (typeof window.zappyOpenQuickView === 'function') window.zappyOpenQuickView((p && (p.slug || p.id)) || pid, sel);
+  }
+
+  function zappyCardCartClick(btn) {
+    var card = zappyCardEl(btn); if (!card) return;
+    var pid = card.getAttribute('data-product-id'); var p = window.zappyGetCardProduct(pid); if (!p) return;
+    var cv = p.card_variants;
+    var sel = window.zappyGetCardSelection(pid) || {};
+    var step = parseFloat(p.quantity_step || p.quantityStep) || 1;
+    if (!cv) { addToCart(Object.assign({}, p, { quantity: step })); return; }
+    var cardKeys = [];
+    if (cv.colorKey) cardKeys.push(cv.colorKey);
+    if (cv.sizeKey) cardKeys.push(cv.sizeKey);
+    var allCardSelected = cardKeys.length > 0 && cardKeys.every(function(k) { return k === cv.colorKey ? !!sel.color : !!sel.size; });
+    if (allCardSelected && !cv.requiresMoreOnPdp) {
+      var matched = window.zappyVariantMatrix.findMatching(cv.matrix, zappyCardSelAttrs(cv, sel));
+      if (matched && matched.available) {
+        addToCart(Object.assign({}, p, {
+          quantity: step,
+          selectedVariant: { id: matched.id, attributes: matched.attributes, price: matched.price, sku: matched.sku, image: matched.image }
+        }));
+        return;
+      }
+    }
+    if (typeof window.zappyOpenQuickView === 'function') window.zappyOpenQuickView(p.slug || p.id, sel);
+  }
+
+  window.zappyInitCardInteractions = function() {
+    if (window.__zappyCardInteractionsInit) return;
+    window.__zappyCardInteractionsInit = true;
+    document.addEventListener('click', function(e) {
+      var node = e.target;
+      if (!node || !node.closest) return;
+      var scrollBtn = node.closest('.zc-scroll');
+      if (scrollBtn) { e.preventDefault(); e.stopPropagation(); zappyCardScroll(scrollBtn); return; }
+      var swatch = node.closest('[data-color]');
+      if (swatch && swatch.closest('[data-card-swatches]')) { e.preventDefault(); e.stopPropagation(); zappyCardSelectColor(swatch); return; }
+      var size = node.closest('[data-size]');
+      if (size && size.closest('[data-card-sizes]')) { e.preventDefault(); e.stopPropagation(); zappyCardSelectSize(size); return; }
+      var eye = node.closest('[data-card-quickview]');
+      if (eye) { e.preventDefault(); e.stopPropagation(); zappyCardOpenQuickView(eye); return; }
+      var cartBtn = node.closest('[data-card-cart]');
+      if (cartBtn && cartBtn.tagName === 'BUTTON') { e.preventDefault(); e.stopPropagation(); zappyCardCartClick(cartBtn); return; }
+    }, false);
+  };
+
+  // Re-hydrate persisted per-card selections (selected classes + swapped image
+  // + availability marks) after a grid re-renders. Idempotently wires the
+  // delegated interaction handler.
+  window.zappyAfterCardsRendered = function(scope) {
+    window.zappyInitCardInteractions();
+    var root = scope || document;
+    var cards = root.querySelectorAll('.product-card[data-product-id]');
+    cards.forEach(function(card) {
+      var pid = card.getAttribute('data-product-id');
+      var p = window.zappyGetCardProduct(pid); if (!p) return;
+      var sel = window.zappyGetCardSelection(pid) || {};
+      if (sel.size) card.classList.add('zc-sizes-pinned');
+      if (sel.color || sel.size) { zappyCardApplyImage(card, p, sel); zappyCardRefreshAvailability(card, p, sel); }
+    });
+  };
+
+  /* ==ZAPPY QUICK VIEW== */
+  // Lightweight product modal: gallery + title + short desc + price + all
+  // variant selectors (via window.zappyVariantMatrix) + qty + Add to Cart +
+  // "View product" link. Reused by the card eye button and the cart fallback.
+  var qvState = { product: null, cv: null, selections: {}, qty: 1, step: 1 };
+
+  function qvEl(id) { return document.getElementById(id); }
+  function qvCurrency() { return (t && t.currency) ? t.currency : (isRTL ? '₪' : '$'); }
+
+  function qvPriceHtml(product, variant) {
+    if (product && product.custom_fields && product.custom_fields.showPrice === false) return '';
+    var cur = qvCurrency();
+    if (variant && variant.price != null && variant.price !== '') {
+      return '<span class="zappy-qv-price-now">' + cur + parseFloat(variant.price).toFixed(2) + '</span>';
+    }
+    var base = parseFloat(product.price);
+    var sale = (product.sale_price && parseFloat(product.sale_price) < base) ? parseFloat(product.sale_price) : null;
+    if (sale != null) {
+      return '<span class="zappy-qv-price-now">' + cur + sale.toFixed(2) + '</span>'
+        + '<span class="zappy-qv-price-was">' + cur + base.toFixed(2) + '</span>';
+    }
+    return '<span class="zappy-qv-price-now">' + cur + (Number.isFinite(base) ? base.toFixed(2) : '0') + '</span>';
+  }
+
+  function qvResolveImg(src) {
+    var resolver = window.resolveProductImageUrl || function(x) { return x; };
+    return src ? resolver(src) : '';
+  }
+
+  function qvGalleryImages(product) {
+    var imgs = [];
+    if (Array.isArray(product.images)) { product.images.forEach(function(im) { if (im) imgs.push(im); }); }
+    if (!imgs.length && product.image) imgs.push(product.image);
+    return imgs;
+  }
+
+  // Render variant selector groups for every option key (color = swatches,
+  // others = pills). Availability per value comes from the shared matrix.
+  function qvRenderVariantGroups() {
+    var cv = qvState.cv;
+    if (!cv || !cv.options || !cv.options.length) return '';
+    var html = '';
+    for (var i = 0; i < cv.options.length; i++) {
+      var opt = cv.options[i];
+      if (!opt.values || !opt.values.length) continue;
+      var isColor = (opt.key === cv.colorKey);
+      var others = {};
+      for (var k in qvState.selections) { if (k !== opt.key && qvState.selections[k]) others[k] = qvState.selections[k]; }
+      var rows = '';
+      for (var j = 0; j < opt.values.length; j++) {
+        var val = opt.values[j];
+        var oos = window.zappyVariantMatrix.isOutOfStock(cv.matrix, opt.key, val.value, others);
+        var seld = qvState.selections[opt.key] === val.value;
+        var cls = (isColor ? 'zappy-qv-swatch' : 'zappy-qv-pill') + (seld ? ' selected' : '') + (oos ? ' out-of-stock' : '');
+        if (isColor) {
+          rows += '<button type="button" class="' + cls + '" data-qv-opt="' + zappyCardEscAttr(opt.key) + '" data-qv-val="' + zappyCardEscAttr(val.value) + '" title="' + zappyCardEscAttr(val.label) + '" aria-label="' + zappyCardEscAttr(val.label) + '"><span class="zappy-qv-swatch-dot" style="background:' + zappyCardCssColor(val.hex || val.value) + '"></span></button>';
+        } else {
+          rows += '<button type="button" class="' + cls + '" data-qv-opt="' + zappyCardEscAttr(opt.key) + '" data-qv-val="' + zappyCardEscAttr(val.value) + '">' + zappyCardEscAttr(val.label) + '</button>';
+        }
+      }
+      html += '<div class="zappy-qv-vgroup"><div class="zappy-qv-vlabel">' + zappyCardEscAttr(opt.label || opt.key) + '</div><div class="zappy-qv-vvalues' + (isColor ? ' is-color' : '') + '">' + rows + '</div></div>';
+    }
+    return html;
+  }
+
+  function qvCurrentVariant() {
+    var cv = qvState.cv;
+    if (!cv || !cv.matrix) return null;
+    var keys = (cv.options || []).map(function(o) { return o.key; });
+    var allSelected = keys.length > 0 && keys.every(function(k) { return !!qvState.selections[k]; });
+    if (!allSelected) return null;
+    return window.zappyVariantMatrix.findMatching(cv.matrix, qvState.selections);
+  }
+
+  function qvRefresh() {
+    var content = qvEl('zappy-qv-content'); if (!content) return;
+    var product = qvState.product; var cv = qvState.cv;
+    // Re-render variant groups (availability may have changed) without
+    // rebuilding the whole modal — just swap the variants container.
+    var vc = content.querySelector('.zappy-qv-variants');
+    if (vc) vc.innerHTML = qvRenderVariantGroups();
+    // Image swap on color selection.
+    var mainImg = content.querySelector('.zappy-qv-main-img img');
+    if (mainImg) {
+      var src = null;
+      if (cv && cv.colorKey && qvState.selections[cv.colorKey]) {
+        var colorOpt = null;
+        for (var i = 0; i < (cv.options || []).length; i++) { if (cv.options[i].key === cv.colorKey) { colorOpt = cv.options[i]; break; } }
+        if (colorOpt) { for (var j = 0; j < colorOpt.values.length; j++) { if (colorOpt.values[j].value === qvState.selections[cv.colorKey] && colorOpt.values[j].image) { src = colorOpt.values[j].image; break; } } }
+      }
+      if (!src && cv) { var mImg = window.zappyVariantMatrix.imageForSelection(cv.matrix, qvState.selections); if (mImg) src = mImg; }
+      if (src) mainImg.src = qvResolveImg(src);
+      else if (mainImg.getAttribute('data-qv-orig')) mainImg.src = mainImg.getAttribute('data-qv-orig');
+    }
+    // Price + cart button state.
+    var variant = qvCurrentVariant();
+    var priceBox = content.querySelector('.zappy-qv-price');
+    if (priceBox) priceBox.innerHTML = qvPriceHtml(product, variant);
+    var cartBtn = content.querySelector('.zappy-qv-addcart');
+    if (cartBtn) {
+      var keys = (cv && cv.options || []).map(function(o) { return o.key; });
+      var allSelected = !cv || keys.length === 0 || keys.every(function(k) { return !!qvState.selections[k]; });
+      var available = !cv || (variant && variant.available);
+      var ready = allSelected && available;
+      cartBtn.disabled = !ready;
+      cartBtn.classList.toggle('is-disabled', !ready);
+      if (cv && keys.length && !allSelected) cartBtn.textContent = getEcomText('selectVariant', t.selectVariant || 'Select options');
+      else if (!available) cartBtn.textContent = getEcomText('outOfStock', t.outOfStock || 'Out of stock');
+      else cartBtn.textContent = getEcomText('addToCart', t.addToCart || 'Add to cart');
+    }
+  }
+
+  function qvSelect(optKey, val) {
+    var cv = qvState.cv; if (!cv) return;
+    // Clicking the selected value again clears it (toggle).
+    if (qvState.selections[optKey] === val) delete qvState.selections[optKey];
+    else qvState.selections[optKey] = val;
+    qvRefresh();
+  }
+
+  function qvSetQty(delta, absolute) {
+    var input = qvEl('zappy-qv-qty-input'); if (!input) return;
+    var step = qvState.step || 1;
+    var cur = parseFloat(input.value) || step;
+    var next = absolute != null ? absolute : (cur + delta * step);
+    if (next < step) next = step;
+    input.value = (next % 1 === 0) ? String(next) : next.toFixed(2);
+    qvState.qty = parseFloat(input.value) || step;
+  }
+
+  function qvAddToCart() {
+    var product = qvState.product; var cv = qvState.cv; if (!product) return;
+    var variant = qvCurrentVariant();
+    if (cv && cv.options && cv.options.length) {
+      if (!variant || !variant.available) return; // button is disabled anyway
+    }
+    var step = qvState.step || 1;
+    var qty = parseFloat((qvEl('zappy-qv-qty-input') || {}).value) || step;
+    var item = Object.assign({}, product, { quantity: qty });
+    if (variant) {
+      item.selectedVariant = { id: variant.id, attributes: variant.attributes, price: variant.price, sku: variant.sku, image: variant.image };
+    }
+    qvSyncCardSelection();
+    // Close QV first (restores body scroll), then add — addToCart opens the
+    // cart drawer and re-locks scroll on its own.
+    window.zappyCloseQuickView();
+    if (typeof addToCart === 'function') addToCart(item);
+    else if (typeof window.zappyAddToCart === 'function') window.zappyAddToCart(item);
+  }
+
+  // Mirror the Quick View selections back onto the originating card so the
+  // grid reflects what the user just chose.
+  function qvSyncCardSelection() {
+    var cv = qvState.cv; var product = qvState.product;
+    if (!cv || !product) return;
+    var sel = {};
+    if (cv.colorKey && qvState.selections[cv.colorKey]) sel.color = qvState.selections[cv.colorKey];
+    if (cv.sizeKey && qvState.selections[cv.sizeKey]) sel.size = qvState.selections[cv.sizeKey];
+    if (sel.color || sel.size) {
+      var prev = window.zappyGetCardSelection(product.id) || {};
+      window.zappySetCardSelection(product.id, Object.assign({}, prev, sel));
+      window.zappyAfterCardsRendered(document);
+    }
+  }
+
+  function qvRender() {
+    var content = qvEl('zappy-qv-content'); if (!content) return;
+    var product = qvState.product;
+    var imgs = qvGalleryImages(product);
+    var firstImg = imgs.length ? qvResolveImg(imgs[0]) : '';
+    var thumbs = '';
+    if (imgs.length > 1) {
+      for (var i = 0; i < imgs.length; i++) {
+        thumbs += '<button type="button" class="zappy-qv-thumb' + (i === 0 ? ' selected' : '') + '" data-qv-thumb="' + zappyCardEscAttr(qvResolveImg(imgs[i])) + '"><img src="' + zappyCardEscAttr(qvResolveImg(imgs[i])) + '" alt=""></button>';
+      }
+    }
+    var shortDesc = '';
+    var rawDesc = product.short_description || product.description || '';
+    if (rawDesc) {
+      var tmp = document.createElement('div'); tmp.innerHTML = rawDesc;
+      shortDesc = (tmp.textContent || tmp.innerText || '').trim();
+      if (shortDesc.length > 260) shortDesc = shortDesc.slice(0, 257) + '...';
+    }
+    var href = buildStorefrontPath('/product/' + (product.slug || product.id));
+    var isCatalog = false;
+    var cartArea = '';
+    if (isCatalog) {
+      cartArea = '<a href="' + href + '" class="zappy-qv-addcart zappy-qv-viewbtn">' + getEcomText('viewDetails', t.viewDetails || 'View product') + '</a>';
+    } else {
+      var step = qvState.step || 1;
+      cartArea = '<div class="zappy-qv-qty"><button type="button" class="zappy-qv-qty-btn" data-qv-qty="-1">-</button>'
+        + '<input type="text" id="zappy-qv-qty-input" class="zappy-qv-qty-input" value="' + (step % 1 === 0 ? step : step.toFixed(2)) + '" inputmode="decimal">'
+        + '<button type="button" class="zappy-qv-qty-btn" data-qv-qty="1">+</button></div>'
+        + '<button type="button" class="zappy-qv-addcart">' + getEcomText('addToCart', t.addToCart || 'Add to cart') + '</button>';
+    }
+    var html = ''
+      + '<div class="zappy-qv-gallery">'
+      +   '<div class="zappy-qv-main-img">' + (firstImg ? '<img src="' + zappyCardEscAttr(firstImg) + '" data-qv-orig="' + zappyCardEscAttr(firstImg) + '" alt="' + zappyCardEscAttr(product.name) + '">' : '<div class="no-image-placeholder">📦</div>') + '</div>'
+      +   (thumbs ? '<div class="zappy-qv-thumbs">' + thumbs + '</div>' : '')
+      + '</div>'
+      + '<div class="zappy-qv-info">'
+      +   '<h2 class="zappy-qv-title">' + zappyCardEscAttr(product.name) + '</h2>'
+      +   (shortDesc ? '<p class="zappy-qv-desc">' + zappyCardEscAttr(shortDesc) + '</p>' : '')
+      +   '<div class="zappy-qv-price">' + qvPriceHtml(product, null) + '</div>'
+      +   '<div class="zappy-qv-variants">' + qvRenderVariantGroups() + '</div>'
+      +   '<div class="zappy-qv-actions">' + cartArea + '</div>'
+      +   '<a href="' + href + '" class="zappy-qv-viewlink">' + getEcomText('viewDetails', t.viewDetails || (isRTL ? 'לפרטים המלאים' : 'View full details')) + '</a>'
+      + '</div>';
+    content.innerHTML = html;
+    qvRefresh();
+  }
+
+  window.zappyOpenQuickView = function(slugOrId, preselected) {
+    var overlay = qvEl('zappy-qv-overlay'); var modal = qvEl('zappy-qv-modal'); var content = qvEl('zappy-qv-content');
+    if (!overlay || !modal || !content) return;
+    overlay.hidden = false; modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    content.innerHTML = '<div class="zappy-qv-loading">' + getEcomText('loading', t.loading || 'Loading...') + '</div>';
+
+    // Seed from the registered card product (has card_variants) when available.
+    var cardProduct = window.zappyGetCardProduct(slugOrId);
+    if (!cardProduct) {
+      var reg = window.__zappyCardProducts || {};
+      for (var key in reg) { if (reg[key] && (reg[key].slug === slugOrId || String(reg[key].id) === String(slugOrId))) { cardProduct = reg[key]; break; } }
+    }
+    var cv = (cardProduct && cardProduct.card_variants) || null;
+    var slug = (cardProduct && (cardProduct.slug || cardProduct.id)) || slugOrId;
+
+    qvState = { product: cardProduct || { name: '', id: slugOrId, slug: slug, price: 0 }, cv: cv, selections: {}, qty: 1, step: 1 };
+    if (preselected) {
+      if (cv) {
+        if (cv.colorKey && preselected.color) qvState.selections[cv.colorKey] = preselected.color;
+        if (cv.sizeKey && preselected.size) qvState.selections[cv.sizeKey] = preselected.size;
+      }
+    }
+
+    var wid = window.ZAPPY_WEBSITE_ID;
+    fetch(buildApiUrlWithLang('/api/ecommerce/storefront/products/' + encodeURIComponent(slug) + '?websiteId=' + wid))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.success && data.data) {
+          var full = data.data;
+          // Keep card_variants (richer for the card) but take gallery/desc/price from full.
+          qvState.product = Object.assign({}, full, cardProduct ? { card_variants: cardProduct.card_variants } : {});
+          qvState.step = parseFloat(full.quantity_step) || 1;
+          if (!qvState.cv && full.card_variants) qvState.cv = full.card_variants;
+        }
+        // modal might have been closed while fetching
+        if (!qvEl('zappy-qv-modal') || qvEl('zappy-qv-modal').hidden) return;
+        qvRender();
+      })
+      .catch(function() {
+        if (qvState.product && qvState.product.name) { qvRender(); }
+        else { content.innerHTML = '<div class="zappy-qv-loading">' + getEcomText('errorLoading', t.errorLoading || 'Could not load product') + '</div>'; }
+      });
+  };
+
+  window.zappyCloseQuickView = function() {
+    var overlay = qvEl('zappy-qv-overlay'); var modal = qvEl('zappy-qv-modal'); var content = qvEl('zappy-qv-content');
+    if (overlay) overlay.hidden = true;
+    if (modal) modal.hidden = true;
+    if (content) content.innerHTML = '';
+    document.body.style.overflow = '';
+  };
+
+  (function qvWireGlobalHandlers() {
+    if (window.__zappyQvInit) return; window.__zappyQvInit = true;
+    document.addEventListener('click', function(e) {
+      var node = e.target; if (!node || !node.closest) return;
+      if (node.closest('#zappy-qv-close') || node.closest('#zappy-qv-overlay')) { e.preventDefault(); window.zappyCloseQuickView(); return; }
+      var modal = qvEl('zappy-qv-modal');
+      if (!modal || modal.hidden) return;
+      var optBtn = node.closest('[data-qv-opt]');
+      if (optBtn && modal.contains(optBtn)) { e.preventDefault(); if (!optBtn.classList.contains('out-of-stock') || optBtn.classList.contains('selected')) qvSelect(optBtn.getAttribute('data-qv-opt'), optBtn.getAttribute('data-qv-val')); return; }
+      var qtyBtn = node.closest('[data-qv-qty]');
+      if (qtyBtn && modal.contains(qtyBtn)) { e.preventDefault(); qvSetQty(parseInt(qtyBtn.getAttribute('data-qv-qty'), 10)); return; }
+      var thumb = node.closest('[data-qv-thumb]');
+      if (thumb && modal.contains(thumb)) { e.preventDefault(); var mainImg = modal.querySelector('.zappy-qv-main-img img'); if (mainImg) mainImg.src = thumb.getAttribute('data-qv-thumb'); modal.querySelectorAll('.zappy-qv-thumb').forEach(function(b) { b.classList.toggle('selected', b === thumb); }); return; }
+      var addBtn = node.closest('.zappy-qv-addcart');
+      if (addBtn && modal.contains(addBtn) && addBtn.tagName === 'BUTTON') { e.preventDefault(); if (!addBtn.disabled) qvAddToCart(); return; }
+    }, false);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { var modal = qvEl('zappy-qv-modal'); if (modal && !modal.hidden) window.zappyCloseQuickView(); }
+    });
+  })();
+
   window.getLegacyColorSwatchHex = function getLegacyColorSwatchHex(colorValue) {
     var bgColor = String(colorValue || '').trim();
     if (!/^#[0-9A-Fa-f]{3,8}$/.test(bgColor)) {
@@ -4489,8 +5121,7 @@ function stripHtmlToText(html) {
       if (!qty || qty < 2 || !bPrice && bPrice !== 0) continue;
 
       var ids = Array.isArray(b.eligibleProductIds) ? b.eligibleProductIds : [];
-      var appliesToAll = b.appliesTo === 'all';
-      if (!appliesToAll && ids.length === 0) continue;
+      var appliesToAll = b.appliesTo === 'all' || ids.length === 0;
 
       var unitPrices = [];
       for (var j = 0; j < cart.length; j++) {
@@ -7601,8 +8232,9 @@ async function syncProductDetailCustomerDiscount() {
 }
 
 function renderProductGrid(grid, products, t, isFeaturedSection, viewMode) {
-  // Update grid class based on layout (only for product grids, not featured section which has its own styling)
-  var layout = additionalJsProductLayout || 'standard';
+  // Card layout is now Standard (square) or Portrait (tall); legacy
+  // compact/detailed map to standard.
+  var layout = (additionalJsProductLayout === 'portrait') ? 'portrait' : 'standard';
   if (!isFeaturedSection) {
     var viewClass = (viewMode === 'list') ? ' view-list' : '';
     grid.className = 'product-grid layout-' + layout + viewClass;
@@ -7704,10 +8336,8 @@ function renderProductGrid(grid, products, t, isFeaturedSection, viewMode) {
     }
     var tagsHtml = tagBadges.length > 0 ? '<div class="product-tags">' + tagBadges.join('') + '</div>' : '';
     
-    // Build card content based on layout
-    var cardContent = '';
+    // Build card content
     var imageHtml = imageUrl ? '<img src="' + imageUrl + '" alt="' + p.name + '">' : '<div class="no-image-placeholder">📦</div>';
-    var layout = additionalJsProductLayout || 'standard';
     
     // Only include price div if showPrice is true
     var pricePerUnitHtml = getPricePerUnitHtml(p);
@@ -7715,53 +8345,24 @@ function renderProductGrid(grid, products, t, isFeaturedSection, viewMode) {
     
     var favBtnHtml = isCatalogMode ? '' : '<button type="button" class="card-favorite-btn" data-product-id="' + p.id + '" onclick="event.preventDefault(); event.stopPropagation(); toggleCardFavorite(this, \'' + p.id + '\')" title="שמור למועדפים" aria-pressed="false"><svg class="heart-outline" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M14.7917 0.833C12.705 0.833 10.811 2.376 10 4.462C9.189 2.375 7.295 0.833 5.208 0.833C2.337 0.833 0 3.17 0 6.042C0 11.675 8.128 17.767 9.758 18.93L10 19.104L10.243 18.93C11.873 17.767 20 11.674 20 6.042C20 3.17 17.663 0.833 14.792 0.833ZM10 18.078C5.716 14.965 0.833 10.019 0.833 6.042C0.833 3.629 2.796 1.667 5.208 1.667C7.498 1.667 9.583 4.05 9.583 6.667H10.417C10.417 4.05 12.502 1.667 14.792 1.667C17.204 1.667 19.167 3.629 19.167 6.042C19.167 10.019 14.284 14.965 10 18.078Z" fill="currentColor"/></svg><svg class="heart-filled" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20"><path d="M14.7917 0.833C12.705 0.833 10.811 2.376 10 4.462C9.189 2.375 7.295 0.833 5.208 0.833C2.337 0.833 0 3.17 0 6.042C0 11.675 8.128 17.767 9.758 18.93L10 19.104L10.243 18.93C11.873 17.767 20 11.674 20 6.042C20 3.17 17.663 0.833 14.792 0.833Z" fill="#e74c3c"/></svg></button>';
     var productHref = buildStorefrontPath('/product/' + (p.slug || p.id));
-    var productCardMediaHtml = '<div class="product-card-media"><a href="' + productHref + '" class="product-card-image-link">' + imageHtml + '</a>' + tagsHtml + favBtnHtml + '</div>';
 
-    if (layout === 'compact') {
-      cardContent =
-        '<div class="product-card-inner">' +
-          productCardMediaHtml +
-          '<a href="' + productHref + '" class="product-card-body-link">' +
-            '<div class="card-content">' +
-              '<h3>' + p.name + '</h3>' +
-              priceHtml +
-            '</div>' +
-          '</a>' +
-        '</div>';
-    } else if (layout === 'detailed') {
-      var detailedDesc = stripHtmlToText(p.description || '');
-      var actionButton = isCatalogMode
-        ? '<a href="' + productHref + '" class="add-to-cart view-details-btn">' + localizedViewDetails + '</a>'
-        : '<button class="add-to-cart" onclick="event.stopPropagation(); window.zappyHandleAddToCart(' + JSON.stringify(p).replace(/"/g, '&quot;') + ')">' + localizedAddToCart + '</button>';
-      cardContent =
-        '<div class="product-card-inner">' +
-          productCardMediaHtml +
-          '<a href="' + productHref + '" class="product-card-body-link">' +
-            '<div class="card-content">' +
-              '<h3>' + p.name + '</h3>' +
-              '<p>' + detailedDesc + '</p>' +
-              priceHtml +
-            '</div>' +
-          '</a>' +
-        '</div>' +
-        actionButton;
-    } else {
-      var standardDesc = stripHtmlToText(p.description || '');
-      cardContent =
-        '<div class="product-card-inner">' +
-          productCardMediaHtml +
-          '<a href="' + productHref + '" class="product-card-body-link">' +
-            '<div class="card-content">' +
-              '<h3>' + p.name + '</h3>' +
-              '<p>' + standardDesc + '</p>' +
-              priceHtml +
-            '</div>' +
-          '</a>' +
-        '</div>';
-    }
-    
+    // Register the product + assemble via the shared card builder.
+    window.zappyRegisterCardProduct(p);
+    var cardContent = window.zappyBuildCardInnerHtml(p, layout, {
+      imageHtml: imageHtml,
+      tagsHtml: tagsHtml,
+      favBtnHtml: favBtnHtml,
+      productHref: productHref,
+      priceHtml: priceHtml,
+      shortDesc: stripHtmlToText(p.description || ''),
+      isCatalogMode: isCatalogMode,
+      localizedViewDetails: localizedViewDetails
+    });
+
     return '<div class="product-card ' + layout + '" data-product-id="' + p.id + '">' + cardContent + '</div>';
   }).join('');
+
+  window.zappyAfterCardsRendered(grid);
 }
 
 // Load categories into catalog dropdown, respecting parent/child hierarchy
@@ -9703,6 +10304,7 @@ function toggleProductDetails(header) {
  *  NULL/absent inventory quantity = unlimited stock (still available when active / in_stock).
  *  Keep aligned with server/utils/ecommerceVariantStorefrontAvailability.js */
 function variantRowUnavailable(v) {
+  if (window.zappyVariantMatrix) return window.zappyVariantMatrix.isUnavailable(v);
   if (!v) return true;
   if (v.is_active === false) return true;
   if (v.stock_status === 'out_of_stock') return true;
@@ -9762,35 +10364,16 @@ function initVariantSelection(product, t) {
     return Array.from(keys);
   }
   
-  // Check if a variant exists with the given attribute combination (any stock status)
-  // If a variant doesn't define a particular attribute, treat it as compatible (wildcard)
+  // Check if a variant exists with the given attribute combination (any stock status).
+  // Delegates to the shared matrix module (wildcard semantics: a variant that
+  // doesn't define an attribute matches any value for it).
   function variantExistsWith(attrKey, attrValue, otherSelections) {
-    return variants.some(variant => {
-      if (!variant.attributes || variant.is_active === false) return false;
-      // If variant defines this attribute, it must match; if not defined, treat as wildcard
-      if (variant.attributes.hasOwnProperty(attrKey) && variant.attributes[attrKey] !== attrValue) return false;
-      // Check all other selections match (skip if variant doesn't define the attribute)
-      for (var k in otherSelections) {
-        if (k === attrKey) continue;
-        if (variant.attributes.hasOwnProperty(k) && variant.attributes[k] !== otherSelections[k]) return false;
-      }
-      return true;
-    });
+    return window.zappyVariantMatrix.existsWith(variants, attrKey, attrValue, otherSelections);
   }
-  
-  // Check if a variant with the given attributes is out of stock
+
+  // Check if a variant with the given attributes is out of stock (shared module).
   function isVariantOutOfStock(attrKey, attrValue, otherSelections) {
-    var matched = variants.filter(variant => {
-      if (!variant.attributes || variant.is_active === false) return false;
-      if (variant.attributes.hasOwnProperty(attrKey) && variant.attributes[attrKey] !== attrValue) return false;
-      for (var k in otherSelections) {
-        if (k === attrKey) continue;
-        if (variant.attributes.hasOwnProperty(k) && variant.attributes[k] !== otherSelections[k]) return false;
-      }
-      return true;
-    });
-    // Unavailable when every matching row has no sellable quantity (inventory-aware + legacy stock flags)
-    return matched.length > 0 && matched.every(v => variantRowUnavailable(v));
+    return window.zappyVariantMatrix.isOutOfStock(variants, attrKey, attrValue, otherSelections);
   }
   
   // Update visibility and stock styling of options in other groups based on current selections
@@ -9923,21 +10506,10 @@ function initVariantSelection(product, t) {
   }
 }
 
-// Find variant that matches all selected attributes
-// If a variant doesn't define a particular attribute, treat it as compatible (wildcard)
+// Find variant that matches all selected attributes (wildcard semantics).
+// Delegates to the shared matrix module so the PDP, cards, and Quick View agree.
 function findMatchingVariant(variants, selectedAttributes) {
-  const selectedKeys = Object.keys(selectedAttributes);
-  if (selectedKeys.length === 0) return null;
-  
-  return variants.find(variant => {
-    if (!variant.attributes || variant.is_active === false) return false;
-    
-    // Check if variant matches all selected attributes
-    // Skip attributes the variant doesn't define (treat as wildcard)
-    return selectedKeys.every(key => {
-      return !variant.attributes.hasOwnProperty(key) || variant.attributes[key] === selectedAttributes[key];
-    });
-  });
+  return window.zappyVariantMatrix.findMatching(variants, selectedAttributes);
 }
 
 // Recompute and update the price-per-unit info element on the detail page
@@ -12147,9 +12719,14 @@ function fixContrast(){
 
     function _gv() { return _vProduct ? (_vProduct.variants||[]).filter(function(v){return v.is_active!==false}) : []; }
     function _gak() { var k=[],s={}; document.querySelectorAll('.variant-option').forEach(function(b){var a=b.getAttribute('data-attr');if(a&&!s[a]){s[a]=true;k.push(a)}}); return k; }
-    function _ce(sel) { return _gv().some(function(v){if(!v.attributes)return false;for(var k in sel){if(!sel.hasOwnProperty(k))continue;if(v.attributes[k]!==sel[k])return false}return true}); }
-    function _fm(sel) { return _gv().filter(function(v){if(!v.attributes)return false;for(var k in sel){if(!sel.hasOwnProperty(k))continue;if(v.attributes[k]!==sel[k])return false}return true}); }
+    // Wildcard match: a variant that doesn't define an attribute matches any value.
+    // Prefers the shared window.zappyVariantMatrix (same script.js) so the PDP,
+    // cards, and Quick View never diverge on strict-vs-wildcard semantics.
+    function _ma(v,sel){if(!v||!v.attributes)return false;for(var k in sel){if(!sel.hasOwnProperty(k))continue;if(v.attributes.hasOwnProperty(k)&&v.attributes[k]!==sel[k])return false}return true}
+    function _ce(sel) { if(window.zappyVariantMatrix)return window.zappyVariantMatrix.filterMatching(_gv(),sel).length>0; return _gv().some(function(v){return _ma(v,sel)}); }
+    function _fm(sel) { if(window.zappyVariantMatrix)return window.zappyVariantMatrix.filterMatching(_gv(),sel); return _gv().filter(function(v){return _ma(v,sel)}); }
     function _oos(v) {
+      if(window.zappyVariantMatrix)return window.zappyVariantMatrix.isUnavailable(v);
       if(!v)return true;
       if(v.stock_status==='out_of_stock')return true;
       var i=v.inventory_quantity!=null?v.inventory_quantity:v.inventoryQuantity;
@@ -12849,29 +13426,30 @@ function fixContrast(){
       return keys;
     }
     
+    // Wildcard semantics, shared with window.zappyVariantMatrix (baked storefront
+    // JS) when present; the inline fallback mirrors it so preview (which may not
+    // load the baked module) and publish never diverge on strict-vs-wildcard.
+    function _matchesAll(v, selections) {
+      if (!v || !v.attributes || v.is_active === false) return false;
+      for (var k in selections) {
+        if (!selections.hasOwnProperty(k)) continue;
+        if (v.attributes.hasOwnProperty(k) && v.attributes[k] !== selections[k]) return false;
+      }
+      return true;
+    }
+
     function _comboExists(selections) {
-      return _getVariants().some(function(v) {
-        if (!v.attributes) return false;
-        for (var k in selections) {
-          if (!selections.hasOwnProperty(k)) continue;
-          if (v.attributes[k] !== selections[k]) return false;
-        }
-        return true;
-      });
+      if (window.zappyVariantMatrix) return window.zappyVariantMatrix.filterMatching(_getVariants(), selections).length > 0;
+      return _getVariants().some(function(v) { return _matchesAll(v, selections); });
     }
     
     function _findMatching(selections) {
-      return _getVariants().filter(function(v) {
-        if (!v.attributes) return false;
-        for (var k in selections) {
-          if (!selections.hasOwnProperty(k)) continue;
-          if (v.attributes[k] !== selections[k]) return false;
-        }
-        return true;
-      });
+      if (window.zappyVariantMatrix) return window.zappyVariantMatrix.filterMatching(_getVariants(), selections);
+      return _getVariants().filter(function(v) { return _matchesAll(v, selections); });
     }
     
     function _isOOS(v) {
+      if (window.zappyVariantMatrix) return window.zappyVariantMatrix.isUnavailable(v);
       if (!v) return true;
       if (v.stock_status === 'out_of_stock') return true;
       var i = v.inventory_quantity != null ? v.inventory_quantity : v.inventoryQuantity;
