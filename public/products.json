@@ -1,6 +1,6 @@
 {
   "@context": "https://schema.org",
-  "generated_at": "2026-06-02T09:02:15.076Z",
+  "generated_at": "2026-06-02T09:05:12.594Z",
   "base_url": "https://be-basic.zappy5.app",
   "currency": "USD",
   "count": 28,
@@ -124,7 +124,7 @@
     },
     {
       "id": "2bd72ecc-cff3-4e59-aece-4f46aca3eb69",
-      "slug": "gvpyyt-ryb-tchrh-md7acn",
+      "slug": "gvpyyt-ryb-tchrh-uoa33q",
       "name": "גופיית ריב תחרה",
       "name_translations": {},
       "description": "",
@@ -163,16 +163,16 @@
         "https://be-basic.zappy5.app/assets/product-1780136220598-k73hlj.webp",
         "https://be-basic.zappy5.app/assets/product-1780136227805-chd5h.webp",
         "https://be-basic.zappy5.app/assets/product-1780136235097-14hbo.webp",
-        "https://be-basic.zappy5.app/assets/product-1780390876725-dhmr8p.webp"
+        "https://be-basic.zappy5.app/assets/product-ai-fit-1780391053915-ki3i49.webp"
       ],
       "in_stock": true,
       "stock_status": "in_stock",
-      "url": "https://be-basic.zappy5.app/product/gvpyyt-ryb-tchrh-md7acn",
+      "url": "https://be-basic.zappy5.app/product/gvpyyt-ryb-tchrh-uoa33q",
       "categories": [
         "אופנת בייסיק נשים ",
         "גופיות וטופים "
       ],
-      "updated_at": "2026-06-02T09:01:37.253Z"
+      "updated_at": "2026-06-02T09:04:33.593Z"
     },
     {
       "id": "11b7f97c-907b-4ed6-b2e1-b379ef3ead7d",
