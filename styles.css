@@ -8932,6 +8932,7 @@ a, button {
 .product-card.portrait p { -webkit-line-clamp: 2 !important; }
 .product-grid.layout-compact, .product-grid.layout-detailed { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
 .product-grid:not(.view-list) .product-card.portrait .product-card-media { aspect-ratio: 3 / 4; }
+.product-grid:not(.view-list) .product-card.portrait .product-card-image-link img { object-fit: cover !important; }
 
 /* ===== Product card v2 (standard/portrait) ===== */
 .product-card .product-card-body { display: flex; flex-direction: column; flex: 1; min-width: 0; padding: 12px 14px 14px; }
@@ -13444,10 +13445,12 @@ a, button {
 .zappy-qv-pill.out-of-stock { opacity: 0.6; }
 .zappy-qv-pill.out-of-stock::after { content: ''; position: absolute; top: 50%; left: 6px; right: 6px; height: 1px; background: currentColor; transform: rotate(-12deg); pointer-events: none; }
 .zappy-qv-actions { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
-.zappy-qv-qty { display: inline-flex; align-items: center; border: 1px solid var(--border-color, #e5e7eb); border-radius: 10px; overflow: hidden; }
-.zappy-qv-qty-btn { width: 38px; height: 44px; border: none; background: transparent; font-size: 18px; cursor: pointer; color: var(--text, #374151); }
-.zappy-qv-qty-input { width: 48px; height: 44px; border: none; text-align: center; font-size: 15px; }
-.zappy-qv-addcart { flex: 1; min-height: 44px; padding: 0 18px; border: none; border-radius: 10px; background: var(--accent, var(--primary, #ff0083)); color: var(--text-light, #fff); font-weight: 600; font-size: 15px; cursor: pointer; transition: filter 0.18s; text-align: center; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.zappy-qv-qty { display: inline-flex; align-items: center; flex: 0 0 auto; border: 1px solid var(--border-color, #e5e7eb); border-radius: 10px; overflow: hidden; }
+.zappy-qv-qty-btn { width: 38px !important; flex: 0 0 38px; height: 44px; border: none; background: transparent; font-size: 18px; cursor: pointer; color: var(--text, #374151); }
+/* width is !important + fixed flex-basis so a site theme's global "input { width: 100% }"
+   rule can't stretch the stepper input and blow out the actions row. */
+.zappy-qv-qty-input { width: 48px !important; flex: 0 0 48px; min-width: 0; box-sizing: border-box; height: 44px; border: none; text-align: center; font-size: 15px; }
+.zappy-qv-addcart { flex: 1; min-height: 44px; padding: 0 18px; border: none; border-radius: 10px; background: var(--accent, var(--primary, #ff0083)); color: var(--text-light, #fff); font-weight: 600; font-size: 15px; cursor: pointer; transition: filter 0.18s; text-align: center; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; white-space: nowrap; }
 .zappy-qv-addcart:hover { filter: brightness(0.92); }
 .zappy-qv-addcart.is-disabled, .zappy-qv-addcart:disabled { background: #cbd5e1; cursor: not-allowed; filter: none; }
 .zappy-qv-viewlink { font-size: 13px; color: var(--accent, var(--primary, #ff0083)); text-decoration: underline; align-self: flex-start; }
@@ -13458,6 +13461,13 @@ a, button {
   .zappy-qv-main-img { min-height: 240px; height: 38vh; }
   .zappy-qv-info { flex: none; padding: 20px 18px 24px; }
   .zappy-qv-title { font-size: 20px; }
+  /* Keep the qty stepper compact + fixed and let the (non-wrapping) Add-to-cart
+     button take the rest on one row, mirroring the desktop layout. */
+  .zappy-qv-actions { gap: 10px; }
+  .zappy-qv-qty { flex: 0 0 auto; }
+  .zappy-qv-qty-btn { width: 32px !important; flex: 0 0 32px; }
+  .zappy-qv-qty-input { width: 34px !important; flex: 0 0 34px; }
+  .zappy-qv-addcart { flex: 1 1 auto; padding: 0 12px; }
 }
 
 /* Product tags (sale, new, featured badges) */
