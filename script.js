@@ -1405,6 +1405,8 @@ window.onload = function() {
 ;
 
 ;
+
+;
 /* ==ZAPPY E-COMMERCE JS START== */
 // E-commerce functionality
 (function() {
@@ -3223,6 +3225,16 @@ function stripHtmlToText(html) {
         thumbs += '<button type="button" class="zappy-qv-thumb' + (i === 0 ? ' selected' : '') + '" data-qv-thumb="' + zappyCardEscAttr(qvResolveImg(imgs[i])) + '"><img src="' + zappyCardEscAttr(qvResolveImg(imgs[i])) + '" alt=""></button>';
       }
     }
+    var thumbsBlock = '';
+    if (thumbs) {
+      var qvPrevLbl = 'תמונות קודמות';
+      var qvNextLbl = 'תמונות הבאות';
+      thumbsBlock = '<div class="zappy-qv-thumbs-wrap">'
+        + '<button type="button" class="zappy-qv-thumb-nav prev" data-qv-thumbs="prev" aria-label="' + qvPrevLbl + '" hidden><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg></button>'
+        + '<div class="zappy-qv-thumbs">' + thumbs + '</div>'
+        + '<button type="button" class="zappy-qv-thumb-nav next" data-qv-thumbs="next" aria-label="' + qvNextLbl + '" hidden><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg></button>'
+        + '</div>';
+    }
     var shortDesc = '';
     var rawDesc = product.short_description || product.description || '';
     if (rawDesc) {
@@ -3245,7 +3257,7 @@ function stripHtmlToText(html) {
     var html = ''
       + '<div class="zappy-qv-gallery">'
       +   '<div class="zappy-qv-main-img">' + (firstImg ? '<img src="' + zappyCardEscAttr(firstImg) + '" data-qv-orig="' + zappyCardEscAttr(firstImg) + '" alt="' + zappyCardEscAttr(product.name) + '">' : '<div class="no-image-placeholder">📦</div>') + '</div>'
-      +   (thumbs ? '<div class="zappy-qv-thumbs">' + thumbs + '</div>' : '')
+      +   thumbsBlock
       + '</div>'
       + '<div class="zappy-qv-info">'
       +   '<h2 class="zappy-qv-title">' + zappyCardEscAttr(product.name) + '</h2>'
@@ -3257,6 +3269,43 @@ function stripHtmlToText(html) {
       + '</div>';
     content.innerHTML = html;
     qvRefresh();
+    qvInitThumbNav(content);
+  }
+
+  // Show/hide the filmstrip arrows based on whether any thumb is clipped past the
+  // physical left/right edge. Geometry-based so it is correct for LTR and every
+  // RTL scrollLeft model (positive, negative, and reversed).
+  function qvUpdateThumbNav(scope) {
+    var root = scope || qvEl('zappy-qv-modal'); if (!root) return;
+    var wrap = root.querySelector('.zappy-qv-thumbs-wrap'); if (!wrap) return;
+    var track = wrap.querySelector('.zappy-qv-thumbs');
+    var prev = wrap.querySelector('.zappy-qv-thumb-nav.prev');
+    var next = wrap.querySelector('.zappy-qv-thumb-nav.next');
+    var thumbsEls = track ? track.querySelectorAll('.zappy-qv-thumb') : [];
+    if (!track || !thumbsEls.length) { if (prev) prev.hidden = true; if (next) next.hidden = true; return; }
+    var overflow = (track.scrollWidth - track.clientWidth) > 4;
+    if (!overflow) { if (prev) prev.hidden = true; if (next) next.hidden = true; return; }
+    var tr = track.getBoundingClientRect();
+    var minLeft = Infinity, maxRight = -Infinity;
+    for (var i = 0; i < thumbsEls.length; i++) {
+      var r = thumbsEls[i].getBoundingClientRect();
+      if (r.left < minLeft) minLeft = r.left;
+      if (r.right > maxRight) maxRight = r.right;
+    }
+    var leftHidden = minLeft < tr.left - 1;
+    var rightHidden = maxRight > tr.right + 1;
+    var rtl = getComputedStyle(track).direction === 'rtl';
+    // prev sits at inline-start, next at inline-end.
+    if (rtl) { if (prev) prev.hidden = !rightHidden; if (next) next.hidden = !leftHidden; }
+    else { if (prev) prev.hidden = !leftHidden; if (next) next.hidden = !rightHidden; }
+  }
+
+  function qvInitThumbNav(scope) {
+    var track = scope && scope.querySelector('.zappy-qv-thumbs');
+    if (!track) return;
+    track.addEventListener('scroll', function() { qvUpdateThumbNav(scope); }, { passive: true });
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(function() { qvUpdateThumbNav(scope); });
+    else qvUpdateThumbNav(scope);
   }
 
   window.zappyOpenQuickView = function(slugOrId, preselected) {
@@ -3323,6 +3372,19 @@ function stripHtmlToText(html) {
       if (optBtn && modal.contains(optBtn)) { e.preventDefault(); if (!optBtn.classList.contains('out-of-stock') || optBtn.classList.contains('selected')) qvSelect(optBtn.getAttribute('data-qv-opt'), optBtn.getAttribute('data-qv-val')); return; }
       var qtyBtn = node.closest('[data-qv-qty]');
       if (qtyBtn && modal.contains(qtyBtn)) { e.preventDefault(); qvSetQty(parseInt(qtyBtn.getAttribute('data-qv-qty'), 10)); return; }
+      var thumbNav = node.closest('[data-qv-thumbs]');
+      if (thumbNav && modal.contains(thumbNav)) {
+        e.preventDefault();
+        var navTrack = modal.querySelector('.zappy-qv-thumbs');
+        if (navTrack) {
+          var rtl = getComputedStyle(navTrack).direction === 'rtl';
+          var sign = thumbNav.getAttribute('data-qv-thumbs') === 'prev' ? -1 : 1; // logical
+          if (rtl) sign = -sign; // map to physical for scrollBy
+          var amount = Math.max(140, navTrack.clientWidth * 0.8);
+          navTrack.scrollBy({ left: sign * amount, behavior: 'smooth' });
+        }
+        return;
+      }
       var thumb = node.closest('[data-qv-thumb]');
       if (thumb && modal.contains(thumb)) { e.preventDefault(); var mainImg = modal.querySelector('.zappy-qv-main-img img'); if (mainImg) mainImg.src = thumb.getAttribute('data-qv-thumb'); modal.querySelectorAll('.zappy-qv-thumb').forEach(function(b) { b.classList.toggle('selected', b === thumb); }); return; }
       var addBtn = node.closest('.zappy-qv-addcart');
@@ -3331,6 +3393,7 @@ function stripHtmlToText(html) {
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') { var modal = qvEl('zappy-qv-modal'); if (modal && !modal.hidden) window.zappyCloseQuickView(); }
     });
+    window.addEventListener('resize', function() { var modal = qvEl('zappy-qv-modal'); if (modal && !modal.hidden) qvUpdateThumbNav(modal); });
   })();
 
   window.getLegacyColorSwatchHex = function getLegacyColorSwatchHex(colorValue) {
