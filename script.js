@@ -1407,6 +1407,8 @@ window.onload = function() {
 ;
 
 ;
+
+;
 /* ==ZAPPY E-COMMERCE JS START== */
 // E-commerce functionality
 (function() {
@@ -2820,6 +2822,10 @@ function stripHtmlToText(html) {
     var out = { swatchRow: '', sizeStrip: '' };
     var cv = p && p.card_variants;
     if (!cv || !cv.options || !cv.options.length) return out;
+    // Exact Figma chevrons (node 1476-1833 / 1476-1823): plain stroked glyphs, no
+    // circular chrome. prev = left chevron, next = right chevron; RTL flips them via CSS.
+    var zcChevPrev = '<button type="button" class="zc-scroll zc-scroll-prev" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 15L7.5 10L12.5 5"></path></svg></button>';
+    var zcChevNext = '<button type="button" class="zc-scroll zc-scroll-next" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 15L12.5 10L7.5 5"></path></svg></button>';
     var sel = window.zappyGetCardSelection(p.id) || {};
     var opt, vals, j, val, oos, cls;
 
@@ -2841,9 +2847,9 @@ function stripHtmlToText(html) {
         }
         var cScroll = vals.length > 8;
         out.swatchRow = '<div class="zc-swatches' + (cScroll ? ' zc-scrollable' : '') + '" data-card-swatches>'
-          + (cScroll ? '<button type="button" class="zc-scroll zc-scroll-prev" tabindex="-1" aria-hidden="true">\u2039</button>' : '')
+          + (cScroll ? zcChevPrev : '')
           + '<div class="zc-swatch-track">' + dots + '</div>'
-          + (cScroll ? '<button type="button" class="zc-scroll zc-scroll-next" tabindex="-1" aria-hidden="true">\u203a</button>' : '')
+          + (cScroll ? zcChevNext : '')
           + '</div>';
       }
     }
@@ -2863,9 +2869,9 @@ function stripHtmlToText(html) {
         }
         var sScroll = vals.length > 6;
         out.sizeStrip = '<div class="zc-size-strip' + (sScroll ? ' zc-scrollable' : '') + '" data-card-sizes>'
-          + (sScroll ? '<button type="button" class="zc-scroll zc-scroll-prev" tabindex="-1" aria-hidden="true">\u2039</button>' : '')
+          + (sScroll ? zcChevPrev : '')
           + '<div class="zc-size-track">' + pills + '</div>'
-          + (sScroll ? '<button type="button" class="zc-scroll zc-scroll-next" tabindex="-1" aria-hidden="true">\u203a</button>' : '')
+          + (sScroll ? zcChevNext : '')
           + '</div>';
       }
     }
@@ -2916,10 +2922,13 @@ function stripHtmlToText(html) {
     var wrap = btn.parentNode;
     var track = wrap ? wrap.querySelector('.zc-swatch-track, .zc-size-track') : null;
     if (!track) return;
-    var delta = Math.max(80, Math.round(track.clientWidth * 0.7));
-    if (btn.classList.contains('zc-scroll-prev')) delta = -delta;
-    if (track.scrollBy) track.scrollBy({ left: delta, behavior: 'smooth' });
-    else track.scrollLeft += delta;
+    var amount = Math.max(80, Math.round(track.clientWidth * 0.7));
+    // prev = toward inline-start, next = toward inline-end (logical). Flip to a
+    // physical scrollBy delta in RTL so both arrows scroll the way they point.
+    var sign = btn.classList.contains('zc-scroll-prev') ? -1 : 1;
+    if (getComputedStyle(track).direction === 'rtl') sign = -sign;
+    if (track.scrollBy) track.scrollBy({ left: sign * amount, behavior: 'smooth' });
+    else track.scrollLeft += sign * amount;
   }
 
   function zappyCardApplyImage(card, p, sel) {
