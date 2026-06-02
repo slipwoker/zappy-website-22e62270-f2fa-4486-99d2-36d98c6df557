@@ -1,259 +1,259 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://example.com</loc>
+    <loc>https://be-basic.zappy5.app</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://example.com/custom-printing</loc>
+    <loc>https://be-basic.zappy5.app/custom-printing</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/about-location</loc>
+    <loc>https://be-basic.zappy5.app/about-location</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/contact</loc>
+    <loc>https://be-basic.zappy5.app/contact</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/products</loc>
+    <loc>https://be-basic.zappy5.app/products</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/cart</loc>
+    <loc>https://be-basic.zappy5.app/cart</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/checkout</loc>
+    <loc>https://be-basic.zappy5.app/checkout</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/login</loc>
+    <loc>https://be-basic.zappy5.app/login</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/account</loc>
+    <loc>https://be-basic.zappy5.app/account</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/order-success</loc>
+    <loc>https://be-basic.zappy5.app/order-success</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/product/:slug</loc>
+    <loc>https://be-basic.zappy5.app/product/:slug</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/category/:slug</loc>
+    <loc>https://be-basic.zappy5.app/category/:slug</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/privacy</loc>
-    <lastmod>2026-06-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://example.com/terms</loc>
+    <loc>https://be-basic.zappy5.app/privacy</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/accessibility</loc>
+    <loc>https://be-basic.zappy5.app/terms</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/product/gvpyh-ktpyh-dkh-gb-ptvch-1iiyln</loc>
+    <loc>https://be-basic.zappy5.app/accessibility</loc>
+    <lastmod>2026-06-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://be-basic.zappy5.app/product/gvpyh-ktpyh-dkh-gb-ptvch-1iiyln</loc>
     <lastmod>2026-05-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/gvpyyt-ryp-psym-6x1bop</loc>
+    <loc>https://be-basic.zappy5.app/product/gvpyyt-ryp-psym-6x1bop</loc>
     <lastmod>2026-05-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/gvpyyt-ryb-tchrh-dwswr3</loc>
+    <loc>https://be-basic.zappy5.app/product/gvpyyt-ryb-tchrh-dwswr3</loc>
     <lastmod>2026-05-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/gvpyyt-kvlr-bejs19</loc>
+    <loc>https://be-basic.zappy5.app/product/gvpyyt-kvlr-bejs19</loc>
     <lastmod>2026-05-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/gvpyyt-sba-oohit8</loc>
+    <loc>https://be-basic.zappy5.app/product/gvpyyt-sba-oohit8</loc>
     <lastmod>2026-05-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/gvpyyt-bvksr-blr9cu</loc>
+    <loc>https://be-basic.zappy5.app/product/gvpyyt-bvksr-blr9cu</loc>
     <lastmod>2026-05-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/gvpyyt-srt-dk-rdv9hn</loc>
+    <loc>https://be-basic.zappy5.app/product/gvpyyt-srt-dk-rdv9hn</loc>
     <lastmod>2026-05-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/mkns-mshbtsvt-shylvb-8v6s4m</loc>
+    <loc>https://be-basic.zappy5.app/product/mkns-mshbtsvt-shylvb-8v6s4m</loc>
     <lastmod>2026-05-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/dgm-mayh-wn12rm</loc>
+    <loc>https://be-basic.zappy5.app/product/dgm-mayh-wn12rm</loc>
     <lastmod>2026-05-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/dgm-agm-kqw3y9</loc>
+    <loc>https://be-basic.zappy5.app/product/dgm-agm-kqw3y9</loc>
     <lastmod>2026-05-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/dgm-nvah-hc9q6f</loc>
+    <loc>https://be-basic.zappy5.app/product/dgm-nvah-hc9q6f</loc>
     <lastmod>2026-05-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/mkns-shylvb-ps-50eg9s</loc>
+    <loc>https://be-basic.zappy5.app/product/mkns-shylvb-ps-50eg9s</loc>
     <lastmod>2026-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/mkns-mshbtsvt-yg2fkw</loc>
+    <loc>https://be-basic.zappy5.app/product/mkns-mshbtsvt-yg2fkw</loc>
     <lastmod>2026-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/mkns-shrvk-rchb-brgl-od22aa</loc>
+    <loc>https://be-basic.zappy5.app/product/mkns-shrvk-rchb-brgl-od22aa</loc>
     <lastmod>2026-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/mkns-shrvk-gvmy-brgl-b4yy8d</loc>
+    <loc>https://be-basic.zappy5.app/product/mkns-shrvk-gvmy-brgl-b4yy8d</loc>
     <lastmod>2026-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/krvp-kyvvtsym-5vhn2a</loc>
+    <loc>https://be-basic.zappy5.app/product/krvp-kyvvtsym-5vhn2a</loc>
     <lastmod>2026-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/krvp-rvgby-gzvr-xqo2ll</loc>
+    <loc>https://be-basic.zappy5.app/product/krvp-rvgby-gzvr-xqo2ll</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/chvltst-krvp-rvgby-ml3fwl</loc>
+    <loc>https://be-basic.zappy5.app/product/chvltst-krvp-rvgby-ml3fwl</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/byysyk-nyky-shylvb-tsbaym-klsufq</loc>
+    <loc>https://be-basic.zappy5.app/product/byysyk-nyky-shylvb-tsbaym-klsufq</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/byysyk-tsvvarvn-nyky-2olie9</loc>
+    <loc>https://be-basic.zappy5.app/product/byysyk-tsvvarvn-nyky-2olie9</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/nyky-gzrt-btn-shylvb-tsbaym-ypo4cx</loc>
+    <loc>https://be-basic.zappy5.app/product/nyky-gzrt-btn-shylvb-tsbaym-ypo4cx</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/trykv-nyky-mngt-bshrvvl-opg2xm</loc>
+    <loc>https://be-basic.zappy5.app/product/trykv-nyky-mngt-bshrvvl-opg2xm</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/trykv-vy-mngt-bshrvvl-3qw5i4</loc>
+    <loc>https://be-basic.zappy5.app/product/trykv-vy-mngt-bshrvvl-3qw5i4</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/vy-byysyk-klasy-dnwaui</loc>
+    <loc>https://be-basic.zappy5.app/product/vy-byysyk-klasy-dnwaui</loc>
     <lastmod>2026-05-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/chvltst-vy-gzrt-btn-4tmy1q</loc>
+    <loc>https://be-basic.zappy5.app/product/chvltst-vy-gzrt-btn-4tmy1q</loc>
     <lastmod>2026-05-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/byysyk-vy-abrsyyz-z6zw0l</loc>
+    <loc>https://be-basic.zappy5.app/product/byysyk-vy-abrsyyz-z6zw0l</loc>
     <lastmod>2026-05-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/chvltst-nyky-mbd-ayntrlvk-f86msn</loc>
+    <loc>https://be-basic.zappy5.app/product/chvltst-nyky-mbd-ayntrlvk-f86msn</loc>
     <lastmod>2026-05-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/product/chvltst-krvp-srt-bbtn-zq83g8</loc>
+    <loc>https://be-basic.zappy5.app/product/chvltst-krvp-srt-bbtn-zq83g8</loc>
     <lastmod>2026-05-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>

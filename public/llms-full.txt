@@ -2,13 +2,13 @@
 
 A basic clothing store located in Beer Yaakov Mall, specializing in quality apparel for women, men, and children. The store has three core offerings: school uniforms for children, active/sportswear for women, and trendy fashionable clothing for girls and women — all with an emphasis on high product quality. Additionally, the business offers custom printing on shirts and garments for private customers, businesses, educational institutions, and youth movements, making it a versatile one-stop shop for both retail and institutional clothing needs.
 
-Source: https://example.com
+Source: https://be-basic.zappy5.app
 
 ---
 
 ## הלבישו את המשפחה בסטייל — BE BASIC
 
-URL: https://example.com
+URL: https://be-basic.zappy5.app
 Description: תלבושות בית ספר לילדים, ביגוד ספורטיבי לנשים ואופנה לנערות — הכל במקום אחד. BE BASIC בקניון באר יעקב מציעה איכות ללא פשרות לכל המשפחה.
 
 הלבישו את המשפחה בסטייל — BE BASIC
@@ -545,7 +545,7 @@ BE BASIC
 
 ## הדפיסו את הסיפור שלכם על כל חולצה — BE BASIC
 
-URL: https://example.com/custom-printing
+URL: https://be-basic.zappy5.app/custom-printing
 Description: הדפסה מותאמת אישית על ביגוד לתנועות נוער, עסקים ומוסדות חינוך — BE BASIC מספקת הדפסה על חולצות באיכות גבוהה עם שירות מהיר ומקצועי. הזמינו עכשיו!
 
 הדפיסו את הסיפור שלכם על כל חולצה — BE BASIC
@@ -1047,7 +1047,7 @@ Description: הדפסה מותאמת אישית על ביגוד לתנועות �
 
 ## הכירו אותנו ומצאו אותנו בקלות — BE BASIC
 
-URL: https://example.com/about-location
+URL: https://be-basic.zappy5.app/about-location
 Description: BE BASIC ממוקמת בקניון באר יעקב ומתמחה בביגוד איכותי לנשים, גברים וילדים. גלו את הסיפור שלנו, הערכים שמניעים אותנו ואיך להגיע אלינו בקלות.
 
 הכירו אותנו ומצאו אותנו בקלות — BE BASIC
@@ -1534,7 +1534,7 @@ Description: BE BASIC ממוקמת בקניון באר יעקב ומתמחה ב�
 
 ## דברו איתנו — אנחנו כאן בשבילכם — BE BASIC
 
-URL: https://example.com/contact
+URL: https://be-basic.zappy5.app/contact
 Description: יש לכם שאלות על הדפסה על חולצות לעסקים, תלבושות בית ספר או ביגוד ספורטיבי? צרו קשר עם BE BASIC עכשיו ונשמח לעזור לכם למצוא בדיוק מה שאתם צריכים.
 
 דברו איתנו — אנחנו כאן בשבילכם — BE BASIC
@@ -2058,7 +2058,7 @@ BE BASIC מציעה מגוון רחב הכולל תלבושות בית ספר ל
 
 ## מוצרים
 
-URL: https://example.com/products
+URL: https://be-basic.zappy5.app/products
 Description: המוצרים שלנו - BE BASIC
 
 מוצרים - BE BASIC
@@ -2277,7 +2277,7 @@ Description: המוצרים שלנו - BE BASIC
 
 ## עגלת קניות
 
-URL: https://example.com/cart
+URL: https://be-basic.zappy5.app/cart
 Description: עגלת הקניות שלך
 
 עגלת קניות - BE BASIC
@@ -2472,7 +2472,7 @@ Description: עגלת הקניות שלך
 
 ## תשלום
 
-URL: https://example.com/checkout
+URL: https://be-basic.zappy5.app/checkout
 Description: תשלום
 
 תשלום - BE BASIC
@@ -2853,7 +2853,7 @@ Description: תשלום
 
 ## התחברות
 
-URL: https://example.com/login
+URL: https://be-basic.zappy5.app/login
 Description: התחברות לקוחות
 
 התחברות - BE BASIC
@@ -3055,7 +3055,7 @@ Description: התחברות לקוחות
 
 ## החשבון שלי
 
-URL: https://example.com/account
+URL: https://be-basic.zappy5.app/account
 Description: החשבון שלי
 
 החשבון שלי - BE BASIC
@@ -3412,7 +3412,7 @@ Description: החשבון שלי
 
 ## ההזמנה התקבלה!
 
-URL: https://example.com/order-success
+URL: https://be-basic.zappy5.app/order-success
 Description: תודה על ההזמנה
 
 ההזמנה התקבלה! - BE BASIC
@@ -3631,7 +3631,7 @@ Description: תודה על ההזמנה
 
 ## מדיניות החזרות
 
-URL: https://example.com/return-policy
+URL: https://be-basic.zappy5.app/return-policy
 Description: מדיניות החזרת מוצרים - זכויותיכם להחזרה והחלפה בהתאם לחוק
 
 מדיניות החזרות - BE BASIC
@@ -3879,7 +3879,7 @@ BE BASIC מחויבת לשביעות רצון לקוחותיה. מדיניות �
 
 ## פרטי המוצר
 
-URL: https://example.com/product/:slug
+URL: https://be-basic.zappy5.app/product/:slug
 Description: פרטי המוצר - BE BASIC
 
 פרטי המוצר - BE BASIC
@@ -4076,7 +4076,7 @@ Description: פרטי המוצר - BE BASIC
 
 ## מוצרים
 
-URL: https://example.com/category/:slug
+URL: https://be-basic.zappy5.app/category/:slug
 Description: מוצרים - BE BASIC
 
 מוצרים - BE BASIC
@@ -4297,7 +4297,7 @@ Description: מוצרים - BE BASIC
 
 ## מדיניות פרטיות
 
-URL: https://example.com/privacy
+URL: https://be-basic.zappy5.app/privacy
 Description: מדיניות הפרטיות שלנו - כיצד אנו אוספים, משתמשים ומגנים על המידע שלכם
 
 מדיניות פרטיות
@@ -4566,7 +4566,7 @@ BE BASIC ("החברה", "אנו", "שלנו") מחויבת להגן על פרט�
 
 ## הצהרת נגישות
 
-URL: https://example.com/accessibility
+URL: https://be-basic.zappy5.app/accessibility
 Description: הצהרת הנגישות שלנו - מחויבותנו לנגישות דיגיטלית
 
 הצהרת נגישות
@@ -4844,7 +4844,7 @@ BE BASIC מחויבת להנגיש את השירותים לכלל הציבור. 
 
 ## תנאי שימוש
 
-URL: https://example.com/terms
+URL: https://be-basic.zappy5.app/terms
 Description: תנאי השימוש באתר - הזכויות והחובות של המשתמשים
 
 תנאי שימוש
@@ -5142,7 +5142,7 @@ BE BASIC מספקת Fashion & Apparel Retail דרך האתר. השירותים �
 ## Product Catalog
 
 ### גופיה כתפיה דקה גב פתוח
-URL: https://example.com/product/gvpyh-ktpyh-dkh-gb-ptvch-1iiyln
+URL: https://be-basic.zappy5.app/product/gvpyh-ktpyh-dkh-gb-ptvch-1iiyln
 Price: 33.00 USD (sale, was 39.00 USD)
 Availability: In stock
 SKU: 751732
@@ -5150,7 +5150,7 @@ SKU: 751732
 ---
 
 ### גופיית ריפ פסים
-URL: https://example.com/product/gvpyyt-ryp-psym-6x1bop
+URL: https://be-basic.zappy5.app/product/gvpyyt-ryp-psym-6x1bop
 Price: 33.00 USD (sale, was 39.00 USD)
 Availability: In stock
 SKU: 751763
@@ -5158,7 +5158,7 @@ SKU: 751763
 ---
 
 ### גופיית ריב תחרה
-URL: https://example.com/product/gvpyyt-ryb-tchrh-dwswr3
+URL: https://be-basic.zappy5.app/product/gvpyyt-ryb-tchrh-dwswr3
 Price: 40.00 USD (sale, was 49.00 USD)
 Availability: In stock
 SKU: 751583
@@ -5166,7 +5166,7 @@ SKU: 751583
 ---
 
 ### גופיית קולר
-URL: https://example.com/product/gvpyyt-kvlr-bejs19
+URL: https://be-basic.zappy5.app/product/gvpyyt-kvlr-bejs19
 Price: 33.00 USD (sale, was 39.00 USD)
 Availability: In stock
 SKU: 751735
@@ -5174,7 +5174,7 @@ SKU: 751735
 ---
 
 ### גופיית סבא
-URL: https://example.com/product/gvpyyt-sba-oohit8
+URL: https://be-basic.zappy5.app/product/gvpyyt-sba-oohit8
 Price: 33.00 USD (sale, was 39.00 USD)
 Availability: In stock
 SKU: 751218
@@ -5182,7 +5182,7 @@ SKU: 751218
 ---
 
 ### גופיית בוקסר
-URL: https://example.com/product/gvpyyt-bvksr-blr9cu
+URL: https://be-basic.zappy5.app/product/gvpyyt-bvksr-blr9cu
 Price: 33.00 USD (sale, was 39.00 USD)
 Availability: In stock
 SKU: 750759
@@ -5190,7 +5190,7 @@ SKU: 750759
 ---
 
 ### גופיית סרט דק
-URL: https://example.com/product/gvpyyt-srt-dk-rdv9hn
+URL: https://be-basic.zappy5.app/product/gvpyyt-srt-dk-rdv9hn
 Price: 33.00 USD (sale, was 39.90 USD)
 Availability: In stock
 SKU: 751461
@@ -5198,7 +5198,7 @@ SKU: 751461
 ---
 
 ### מכנס משבצות שילוב 
-URL: https://example.com/product/mkns-mshbtsvt-shylvb-8v6s4m
+URL: https://be-basic.zappy5.app/product/mkns-mshbtsvt-shylvb-8v6s4m
 Price: 119.00 USD (sale, was 135.00 USD)
 Availability: In stock
 SKU: 79138
@@ -5206,7 +5206,7 @@ SKU: 79138
 ---
 
 ### דגם מאיה 
-URL: https://example.com/product/dgm-mayh-wn12rm
+URL: https://be-basic.zappy5.app/product/dgm-mayh-wn12rm
 Price: 40.00 USD (sale, was 45.00 USD)
 Availability: In stock
 SKU: 63007-1
@@ -5214,7 +5214,7 @@ SKU: 63007-1
 ---
 
 ### דגם אגם
-URL: https://example.com/product/dgm-agm-kqw3y9
+URL: https://be-basic.zappy5.app/product/dgm-agm-kqw3y9
 Price: 40.00 USD (sale, was 45.00 USD)
 Availability: In stock
 SKU: 6210-1
@@ -5224,7 +5224,7 @@ SKU: 6210-1
 ---
 
 ### דגם נועה 
-URL: https://example.com/product/dgm-nvah-hc9q6f
+URL: https://be-basic.zappy5.app/product/dgm-nvah-hc9q6f
 Price: 40.00 USD (sale, was 45.00 USD)
 Availability: In stock
 SKU: 6130-1
@@ -5234,7 +5234,7 @@ SKU: 6130-1
 ---
 
 ### מכנס שילוב פס
-URL: https://example.com/product/mkns-shylvb-ps-50eg9s
+URL: https://be-basic.zappy5.app/product/mkns-shylvb-ps-50eg9s
 Price: 119.00 USD (sale, was 135.00 USD)
 Availability: In stock
 SKU: 79127
@@ -5242,7 +5242,7 @@ SKU: 79127
 ---
 
 ### מכנס משבצות 
-URL: https://example.com/product/mkns-mshbtsvt-yg2fkw
+URL: https://be-basic.zappy5.app/product/mkns-mshbtsvt-yg2fkw
 Price: 109.00 USD (sale, was 129.00 USD)
 Availability: In stock
 SKU: 79122
@@ -5250,7 +5250,7 @@ SKU: 79122
 ---
 
 ### מכנס שרוך רחב ברגל 
-URL: https://example.com/product/mkns-shrvk-rchb-brgl-od22aa
+URL: https://be-basic.zappy5.app/product/mkns-shrvk-rchb-brgl-od22aa
 Price: 89.00 USD (sale, was 99.00 USD)
 Availability: In stock
 SKU: 77992
@@ -5258,7 +5258,7 @@ SKU: 77992
 ---
 
 ### מכנס שרוך גומי ברגל 
-URL: https://example.com/product/mkns-shrvk-gvmy-brgl-b4yy8d
+URL: https://be-basic.zappy5.app/product/mkns-shrvk-gvmy-brgl-b4yy8d
 Price: 89.00 USD (sale, was 99.00 USD)
 Availability: In stock
 SKU: 77992
@@ -5266,7 +5266,7 @@ SKU: 77992
 ---
 
 ### קרופ כיווצים 
-URL: https://example.com/product/krvp-kyvvtsym-5vhn2a
+URL: https://be-basic.zappy5.app/product/krvp-kyvvtsym-5vhn2a
 Price: 45.00 USD (sale, was 55.00 USD)
 Availability: In stock
 SKU: 751761
@@ -5274,7 +5274,7 @@ SKU: 751761
 ---
 
 ### קרופ רוגבי גזור 
-URL: https://example.com/product/krvp-rvgby-gzvr-xqo2ll
+URL: https://be-basic.zappy5.app/product/krvp-rvgby-gzvr-xqo2ll
 Price: 45.00 USD (sale, was 55.00 USD)
 Availability: In stock
 SKU: 751402
@@ -5282,7 +5282,7 @@ SKU: 751402
 ---
 
 ### חולצת קרופ רוגבי
-URL: https://example.com/product/chvltst-krvp-rvgby-ml3fwl
+URL: https://be-basic.zappy5.app/product/chvltst-krvp-rvgby-ml3fwl
 Price: 45.00 USD (sale, was 55.00 USD)
 Availability: In stock
 SKU: 751395
@@ -5290,7 +5290,7 @@ SKU: 751395
 ---
 
 ### בייסיק ניקי שילוב צבעים
-URL: https://example.com/product/byysyk-nyky-shylvb-tsbaym-klsufq
+URL: https://be-basic.zappy5.app/product/byysyk-nyky-shylvb-tsbaym-klsufq
 Price: 45.00 USD (sale, was 55.00 USD)
 Availability: In stock
 SKU: 751768
@@ -5298,7 +5298,7 @@ SKU: 751768
 ---
 
 ### בייסיק צווארון ניקי  
-URL: https://example.com/product/byysyk-tsvvarvn-nyky-2olie9
+URL: https://be-basic.zappy5.app/product/byysyk-tsvvarvn-nyky-2olie9
 Price: 45.00 USD (sale, was 55.00 USD)
 Availability: In stock
 SKU: 750790
@@ -5306,7 +5306,7 @@ SKU: 750790
 ---
 
 ### ניקי גזרת בטן שילוב צבעים
-URL: https://example.com/product/nyky-gzrt-btn-shylvb-tsbaym-ypo4cx
+URL: https://be-basic.zappy5.app/product/nyky-gzrt-btn-shylvb-tsbaym-ypo4cx
 Price: 45.00 USD (sale, was 55.00 USD)
 Availability: In stock
 SKU: 751762
@@ -5314,7 +5314,7 @@ SKU: 751762
 ---
 
 ### טריקו ניקי מנג'ט בשרוול 
-URL: https://example.com/product/trykv-nyky-mngt-bshrvvl-opg2xm
+URL: https://be-basic.zappy5.app/product/trykv-nyky-mngt-bshrvvl-opg2xm
 Price: 45.00 USD (sale, was 55.00 USD)
 Availability: In stock
 SKU: 751723
@@ -5322,7 +5322,7 @@ SKU: 751723
 ---
 
 ### טריקו וי מנג'ט בשרוול 
-URL: https://example.com/product/trykv-vy-mngt-bshrvvl-3qw5i4
+URL: https://be-basic.zappy5.app/product/trykv-vy-mngt-bshrvvl-3qw5i4
 Price: 45.00 USD (sale, was 55.00 USD)
 Availability: In stock
 SKU: 751723
@@ -5330,7 +5330,7 @@ SKU: 751723
 ---
 
 ### וי בייסיק קלאסי
-URL: https://example.com/product/vy-byysyk-klasy-dnwaui
+URL: https://be-basic.zappy5.app/product/vy-byysyk-klasy-dnwaui
 Price: 45.00 USD (sale, was 55.00 USD)
 Availability: In stock
 SKU: 750747
@@ -5338,7 +5338,7 @@ SKU: 750747
 ---
 
 ### חולצת וי גזרת בטן
-URL: https://example.com/product/chvltst-vy-gzrt-btn-4tmy1q
+URL: https://be-basic.zappy5.app/product/chvltst-vy-gzrt-btn-4tmy1q
 Price: 45.00 USD (sale, was 55.00 USD)
 Availability: In stock
 SKU: 751262
@@ -5346,21 +5346,21 @@ SKU: 751262
 ---
 
 ### בייסיק וי אברסייז 
-URL: https://example.com/product/byysyk-vy-abrsyyz-z6zw0l
+URL: https://be-basic.zappy5.app/product/byysyk-vy-abrsyyz-z6zw0l
 Price: 50.00 USD (sale, was 65.00 USD)
 Availability: In stock
 
 ---
 
 ### חולצת ניקי מבד אינטרלוק 
-URL: https://example.com/product/chvltst-nyky-mbd-ayntrlvk-f86msn
+URL: https://be-basic.zappy5.app/product/chvltst-nyky-mbd-ayntrlvk-f86msn
 Price: 45.00 USD (sale, was 59.00 USD)
 Availability: In stock
 
 ---
 
 ### חולצת קרופ סרט בבטן
-URL: https://example.com/product/chvltst-krvp-srt-bbtn-zq83g8
+URL: https://be-basic.zappy5.app/product/chvltst-krvp-srt-bbtn-zq83g8
 Price: 45.00 USD (sale, was 59.00 USD)
 Availability: In stock
 
