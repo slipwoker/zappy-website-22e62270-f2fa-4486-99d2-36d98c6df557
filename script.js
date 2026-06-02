@@ -1413,6 +1413,8 @@ window.onload = function() {
 ;
 
 ;
+
+;
 /* ==ZAPPY E-COMMERCE JS START== */
 // E-commerce functionality
 (function() {
@@ -5211,7 +5213,8 @@ function stripHtmlToText(html) {
       if (!qty || qty < 2 || !bPrice && bPrice !== 0) continue;
 
       var ids = Array.isArray(b.eligibleProductIds) ? b.eligibleProductIds : [];
-      var appliesToAll = b.appliesTo === 'all' || ids.length === 0;
+      var appliesToAll = b.appliesTo === 'all';
+      if (!appliesToAll && ids.length === 0) continue;
 
       var unitPrices = [];
       for (var j = 0; j < cart.length; j++) {

@@ -8948,9 +8948,12 @@ a, button {
 .zc-swatches { display: flex; align-items: center; gap: 4px; margin: 8px 0 0; position: relative; }
 .zc-swatch-track { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 6px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none; padding: 2px; }
 .zc-swatch-track::-webkit-scrollbar { display: none; }
-.zc-swatch { width: 20px; height: 20px; min-width: 20px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.12); background: none; padding: 0; cursor: pointer; position: relative; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.12s; }
+/* No transform/transition on swatches: a scale-up on select (sticky :hover on touch)
+   briefly enlarged the dot and pushed the 2px selected ring past the scroll-track's clip
+   region, so the ring looked cut off at the top for ~half a second before settling. The
+   selected ring must appear instantly in its final, non-clipped state. */
+.zc-swatch { width: 20px; height: 20px; min-width: 20px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.12); background: none; padding: 0; cursor: pointer; position: relative; display: inline-flex; align-items: center; justify-content: center; }
 .zc-swatch .zc-swatch-dot { width: 100%; height: 100%; border-radius: 50%; display: block; }
-.zc-swatch:hover { transform: scale(1.12); }
 .zc-swatch.selected { box-shadow: 0 0 0 2px var(--accent, var(--primary, #ff0083)); border-color: transparent; }
 .zc-swatch.out-of-stock { opacity: 0.45; }
 .zc-swatch.out-of-stock::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(to top left, transparent calc(50% - 1px), rgba(0,0,0,0.55) 50%, transparent calc(50% + 1px)); pointer-events: none; }
