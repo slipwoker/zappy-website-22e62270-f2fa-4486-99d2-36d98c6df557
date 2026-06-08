@@ -77,7 +77,7 @@ Information about WCAG compliance and accessibility features.
 ### גופיה כתפיה דקה גב פתוח
 https://be-basic.zappy5.app/product/gvpyh-ktpyh-dkh-gb-ptvch-1iiyln
 - Price: 33.00 USD (sale, was 39.00 USD)
-- Availability: In stock
+- Availability: Out of stock
 - Category: אופנת בייסיק נשים 
 - SKU: 751732
 - Image: https://be-basic.zappy5.app/assets/product-1780159953761-bs78eb.webp
@@ -85,7 +85,7 @@ https://be-basic.zappy5.app/product/gvpyh-ktpyh-dkh-gb-ptvch-1iiyln
 ### גופיית ריפ פסים
 https://be-basic.zappy5.app/product/gvpyyt-ryp-psym-6x1bop
 - Price: 33.00 USD (sale, was 39.00 USD)
-- Availability: In stock
+- Availability: Out of stock
 - Category: אופנת בייסיק נשים 
 - SKU: 751763
 - Image: https://be-basic.zappy5.app/assets/product-1780136796134-em3twf.webp

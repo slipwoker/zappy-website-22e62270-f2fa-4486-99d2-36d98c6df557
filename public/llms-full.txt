@@ -5528,7 +5528,7 @@ BE BASIC מספקת Fashion & Apparel Retail דרך האתר. השירותים �
 ### גופיה כתפיה דקה גב פתוח
 URL: https://be-basic.zappy5.app/product/gvpyh-ktpyh-dkh-gb-ptvch-1iiyln
 Price: 33.00 USD (sale, was 39.00 USD)
-Availability: In stock
+Availability: Out of stock
 SKU: 751732
 
 ---
@@ -5536,7 +5536,7 @@ SKU: 751732
 ### גופיית ריפ פסים
 URL: https://be-basic.zappy5.app/product/gvpyyt-ryp-psym-6x1bop
 Price: 33.00 USD (sale, was 39.00 USD)
-Availability: In stock
+Availability: Out of stock
 SKU: 751763
 
 ---
